@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:id="@+id/radioGroupMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:textSize="18dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Select a Site"
+            android:inputType="textCapSentences"
+            android:textColorHint="@color/dark_gray"
+            android:textColor="@color/black"
+            android:hint="Enter Quiz title" />
+
+        <TextView
+            android:id="@+id/site1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:textSize="16dp"
+            android:layout_marginLeft="5dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="Site One"
+            android:inputType="textCapSentences"
+            android:textColorHint="@color/dark_gray"
+            android:textColor="@color/black"
+            android:hint="Enter Quiz title" />
+  <TextView
+            android:id="@+id/site2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:textSize="16dp"
+            android:layout_marginLeft="5dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="Site Two"
+            android:inputType="textCapSentences"
+            android:textColorHint="@color/dark_gray"
+            android:textColor="@color/black"
+            android:hint="Enter Quiz title" />
+  <TextView
+            android:id="@+id/site3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:textSize="16dp"
+            android:layout_marginLeft="5dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="Site Three"
+            android:inputType="textCapSentences"
+            android:textColorHint="@color/dark_gray"
+            android:textColor="@color/black"
+            android:hint="Enter Quiz title" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
+
+

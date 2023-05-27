@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">VVAutotest</string>
+
+    <string name="ad_menu_1">Home</string>
+    <string name="ad_menu_2">Photos</string>
+    <string name="ad_menu_3">DPR/DWR PDF</string>
+    <string name="ad_menu_4">Manpower Entry &amp; Attendance</string>
+    <string name="ad_menu_5">Progress Entry</string>
+    <string name="ad_menu_6">Direct Material Consumption Entry</string>
+    <string name="ad_menu_7">Logout</string>
+
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+</resources>

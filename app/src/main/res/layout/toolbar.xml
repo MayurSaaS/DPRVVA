@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:background="@drawable/side_menu_background"
+    android:paddingTop="15dp"
+    android:elevation="4dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="15dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            app:tint="@color/white"
+            android:id="@+id/navigationIcon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/navigation_menu" />
+
+
+        <RelativeLayout
+            android:layout_marginLeft="10dp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textStyle="bold"
+                android:text="Site 1"
+                android:paddingLeft="10dp"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp"
+                android:fontFamily="@font/poppins_medium"
+                android:textColor="@color/white"
+                android:background="@drawable/site_spinner_background"
+                android:gravity="center_vertical"
+                android:id="@+id/spinner1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                 />
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/downarrow" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp">
+
+            <ImageView
+                app:tint="@color/white"
+                android:layout_alignParentRight="true"
+                android:id="@+id/notificationBtn"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:padding="5dp"
+                android:src="@drawable/notification" />
+
+            <!--  <ImageView
+                  android:visibility="gone"
+                  android:id="@+id/wallet"
+                  android:layout_width="35dp"
+                  android:layout_height="35dp"
+                  android:layout_alignParentRight="true"
+                  android:layout_centerVertical="true"
+                  android:padding="5dp"
+                  android:src="@drawable/notification" />
+      -->
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/titleTV"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginRight="5dp"
+        android:gravity="center_vertical"
+        android:padding="5dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="Dashboard"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+</LinearLayout>

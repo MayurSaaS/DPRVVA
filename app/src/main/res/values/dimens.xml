@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="side_menu_txt_size">16dp</dimen>
+    <dimen name="side_sub_menu_txt_size">12dp</dimen>
+    <dimen name="side_menu_padding">15dp</dimen>
+</resources>

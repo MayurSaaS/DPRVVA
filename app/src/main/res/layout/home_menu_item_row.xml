@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView android:id="@+id/mainCard"
+    android:gravity="center_vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="4dp"
+    android:layout_margin="5dp"
+    android:clickable="true"
+    app:cardCornerRadius="10dp"
+    android:orientation="vertical"
+    android:focusable="true"
+    app:cardBackgroundColor="@color/dashboard_menu_item_back"
+    android:foreground="?attr/selectableItemBackground"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_marginTop="5dp"
+                app:tint="@color/colorSecondary"
+                android:id="@+id/image"
+                android:src="@drawable/image_gallery"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+            <TextView
+                android:layout_marginTop="7dp"
+                android:id="@+id/title"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="3dp"
+                android:minLines="2"
+                android:text=" as asv as vewjnvsldv sdlvsdv sdlvssdv sdv sdvnsdv sdv sdsdv svd db ,db,xcx,cv, xcxc xc, bxc ,xc ,xc"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_regular"
+                android:textSize="15dp"
+                android:textStyle="bold"></TextView>
+
+        </LinearLayout>
+
+        <View
+            android:layout_alignParentBottom="true"
+            android:id="@+id/leftView"
+            android:background="@color/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="7dp"></View>
+
+
+    </RelativeLayout>
+
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,1250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/app_background"
+    tools:context=".fragments.HomeFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:paddingBottom="90dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_margin="3dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:id="@+id/photoll"
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_margin="3dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_margin="3dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_margin="3dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_margin="3dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_margin="3dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_margin="3dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_margin="3dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_margin="3dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_margin="3dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:elevation="4dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp">
+                    <LinearLayout
+                        android:elevation="5dp"
+                        android:background="@drawable/photo_titile_bg"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12dp"
+                            android:padding="5dp"
+                            android:textColor="@color/white"
+                            android:text="Category 1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/dummy"
+                        app:riv_corner_radius="10dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:background="#56ffffff"
+        android:id="@+id/buttonLL"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.cardview.widget.CardView
+            android:layout_margin="15dp"
+            android:id="@+id/uploadPhotos"
+            app:cardCornerRadius="25dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/colorPrimaryVariant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textColor="@color/white"
+                    android:padding="15dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center"
+                    android:text="Upload Photos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" > </TextView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+</RelativeLayout>
