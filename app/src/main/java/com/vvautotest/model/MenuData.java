@@ -4,47 +4,97 @@ import android.graphics.drawable.Drawable;
 
 public class MenuData {
 
-    String title;
-    Drawable image;
-    int action;
-    String subTitle;
+    int id;
+    public String name;
+    public String subName;
+    public String detailName;
+    public String menuIcon;
+    public String subMenuIcon;
+    public boolean hasChildren, isGroup, isSelected;
 
-    public MenuData(String title, Drawable image, int action, String subTitle) {
-        this.title = title;
-        this.image = image;
-        this.action = action;
-        this.subTitle = subTitle;
+    public MenuData(int id, String name, String subName,
+                    String detailName, boolean hasChildren, boolean isGroup,
+                    boolean isSelected, String menuIcon, String subMenuIcon) {
+        this.id = id;
+        this.name = name;
+        this.subName = subName;
+        this.detailName = detailName;
+        this.hasChildren = hasChildren;
+        this.isGroup = isGroup;
+        this.isSelected = isSelected;
+        this.menuIcon = menuIcon;
+        this.subMenuIcon = subMenuIcon;
     }
 
-    public String getSubTitle() {
-        return subTitle;
+    public int getId() {
+        return id;
     }
 
-    public void setSubTitle(String subTitle) {
-        this.subTitle = subTitle;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getAction() {
-        return action;
+    public String getName() {
+        return name;
     }
 
-    public void setAction(int action) {
-        this.action = action;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getTitle() {
-        return title;
+    public String getMenuIcon() {
+        return menuIcon;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setMenuIcon(String menuIcon) {
+        this.menuIcon = menuIcon;
     }
 
-    public Drawable getImage() {
-        return image;
+    public String getSubMenuIcon() {
+        return subMenuIcon;
     }
 
-    public void setImage(Drawable image) {
-        this.image = image;
+    public void setSubMenuIcon(String subMenuIcon) {
+        this.subMenuIcon = subMenuIcon;
+    }
+
+    public String getSubName() {
+        return subName;
+    }
+
+    public void setSubName(String subName) {
+        this.subName = subName;
+    }
+
+    public String getDetailName() {
+        return detailName;
+    }
+
+    public void setDetailName(String detailName) {
+        this.detailName = detailName;
+    }
+
+    public boolean isHasChildren() {
+        return hasChildren;
+    }
+
+    public void setHasChildren(boolean hasChildren) {
+        this.hasChildren = hasChildren;
+    }
+
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    public void setGroup(boolean group) {
+        isGroup = group;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

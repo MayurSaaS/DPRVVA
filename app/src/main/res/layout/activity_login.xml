@@ -7,6 +7,7 @@
     android:orientation="vertical"
     android:fillViewport="true"
     android:gravity="center"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
     <ImageView
@@ -63,12 +64,15 @@
                     android:layout_height="wrap_content">
 
                     <EditText
+                        style="@style/edittextStyle"
                         android:layout_marginTop="10dp"
                         android:layout_marginRight="10dp"
                         android:layout_marginLeft="10dp"
                         android:elevation="4dp"
+                        android:inputType="text"
+                        android:text=""
                         android:fontFamily="@font/poppins_regular"
-                        android:id="@+id/mobileET"
+                        android:id="@+id/userET"
                         android:hint="Email"
                         android:padding="15dp"
                         android:background="@drawable/et_bg"
@@ -77,6 +81,7 @@
 
                     </EditText>
                     <EditText
+                        style="@style/edittextStyle"
                         android:layout_marginRight="10dp"
                         android:layout_marginLeft="10dp"
                         android:elevation="4dp"
@@ -84,6 +89,7 @@
                         android:id="@+id/passwordET"
                         android:layout_marginBottom="5dp"
                         android:hint="Password"
+                        android:inputType="textPassword"
                         android:layout_marginTop="8dp"
                         android:padding="15dp"
                         android:background="@drawable/et_bg"
@@ -139,6 +145,17 @@
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/deviceIdTV"
+                    android:gravity="center"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:padding="15dp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="Device ID : "
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
             </LinearLayout>
 

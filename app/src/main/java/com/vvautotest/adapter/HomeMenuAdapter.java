@@ -44,8 +44,8 @@ public class HomeMenuAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         MenuData data = videoList.get(position);
-        ((FileLayoutHolder) holder).title.setText((data.getTitle()));
-        ((FileLayoutHolder) holder).image.setImageDrawable((data.getImage()));
+        ((FileLayoutHolder) holder).title.setText((data.name));
+    //    ((FileLayoutHolder) holder).image.setImageDrawable((data.getImage()));
         /*if(position%2 == 0)
         {
             ((FileLayoutHolder) holder).mainCard.setBackground(mContext.getResources().getDrawable(R.drawable.home_menu_design_one));

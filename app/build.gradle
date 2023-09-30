@@ -1,5 +1,7 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -34,8 +36,22 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.25'
     implementation 'com.makeramen:roundedimageview:2.3.0'
+    implementation 'com.amitshekhar.android:jackson-android-networking:1.0.2'
+    implementation 'org.jsoup:jsoup:1.16.1'
+    implementation 'com.github.maayyaannkk:ImagePicker:1.0.13'
 
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+
+    implementation 'androidx.room:room-runtime:2.4.3'
+    annotationProcessor 'androidx.room:room-compiler:2.4.3'
+
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.13.0'
     implementation 'com.jakewharton:butterknife:10.0.0'
+    implementation files('libs\\org-apache-commons-codec.jar')
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
 
     testImplementation 'junit:junit:4.13.2'

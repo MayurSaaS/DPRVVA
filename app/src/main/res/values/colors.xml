@@ -11,6 +11,7 @@
     <color name="side_cen_">#278F4D</color>
     <color name="side_end">#2DA057</color>
     <color name="colorPrimary">#228345</color>
+    <color name="colorPrimaryDark">#1C733B</color>
     <color name="colorPrimaryVariant">#1c753c</color>
     <color name="colorSecondary">#339ED8</color>
     <color name="colorSecondaryVariant">#FF018786</color>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/mainCard"
+        android:elevation="4dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp">
+        <LinearLayout
+            android:elevation="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:fontFamily="@font/poppins_regular"
+                android:textSize="11dp"
+                android:padding="5dp"
+                android:id="@+id/nameTV"
+                android:textColor="@color/white"
+                android:text="Cate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </TextView>
+        </LinearLayout>
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="3dp"
+            android:id="@+id/image"
+            android:layout_marginBottom="3dp"
+            android:scaleType="centerCrop"
+            app:riv_corner_radius="10dp" />
+
+
+    </RelativeLayout>
+
+</LinearLayout>
