@@ -31,46 +31,12 @@
             android:textColor="@color/black"
             android:hint="Enter Quiz title" />
 
-        <TextView
-            android:id="@+id/site1"
+        <ListView
+            android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:textSize="16dp"
-            android:layout_marginLeft="5dp"
-            android:fontFamily="@font/poppins_regular"
-            android:text="Site One"
-            android:inputType="textCapSentences"
-            android:textColorHint="@color/dark_gray"
-            android:textColor="@color/black"
-            android:hint="Enter Quiz title" />
-  <TextView
-            android:id="@+id/site2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:textSize="16dp"
-            android:layout_marginLeft="5dp"
-            android:fontFamily="@font/poppins_regular"
-            android:text="Site Two"
-            android:inputType="textCapSentences"
-            android:textColorHint="@color/dark_gray"
-            android:textColor="@color/black"
-            android:hint="Enter Quiz title" />
-  <TextView
-            android:id="@+id/site3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:textSize="16dp"
-            android:layout_marginLeft="5dp"
-            android:fontFamily="@font/poppins_regular"
-            android:text="Site Three"
-            android:inputType="textCapSentences"
-            android:textColorHint="@color/dark_gray"
-            android:textColor="@color/black"
-            android:hint="Enter Quiz title" />
-
+            android:layout_marginBottom="50dp">
+        </ListView>
     </LinearLayout>
 
 

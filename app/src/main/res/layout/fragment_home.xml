@@ -16,6 +16,22 @@
         android:layout_height="wrap_content">
 
     </androidx.recyclerview.widget.RecyclerView>
+    <androidx.fragment.app.FragmentContainerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/map"
+        tools:context=".MapsActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
 
+
+    <TextView
+        android:id="@+id/locationTextMessage"
+        android:padding="20sp"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:text=""
+        android:textSize="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></TextView>
 
 </RelativeLayout>

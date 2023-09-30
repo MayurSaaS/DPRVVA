@@ -11,13 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.vvautotest.R;
+import com.vvautotest.model.Site;
 import com.vvautotest.model.SpinnerData;
 
 import java.util.ArrayList;
 
-public class SiteSpinnerAdapter extends ArrayAdapter<SpinnerData> {
+public class SiteSpinnerAdapter extends ArrayAdapter<Site> {
 
-    public SiteSpinnerAdapter(Context context, ArrayList<SpinnerData> algorithmList)
+    public SiteSpinnerAdapter(Context context, ArrayList<Site> algorithmList)
     {
         super(context, 0, algorithmList);
     }
@@ -45,9 +46,9 @@ public class SiteSpinnerAdapter extends ArrayAdapter<SpinnerData> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.site_spinner_item_row, parent, false);
         }
         TextView textViewName = convertView.findViewById(R.id.text_view);
-        SpinnerData currentItem = getItem(position);
+        Site currentItem = getItem(position);
         if (currentItem != null) {
-            textViewName.setText(currentItem.getName());
+            textViewName.setText(currentItem.name);
         }
         return convertView;
     }

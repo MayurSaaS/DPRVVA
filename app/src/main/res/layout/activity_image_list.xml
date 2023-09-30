@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/light_gray"
+    tools:context=".activities.UploadPhotosActivity">
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingTop="15dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="15dp">
+
+        <ImageView
+            android:id="@+id/navigationIcon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:padding="5dp"
+            android:src="@drawable/back_white" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp">
+
+            <TextView
+                android:id="@+id/titleTV"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginRight="5dp"
+                android:fontFamily="@font/poppins_medium"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="Add New Closing Entry"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="Study Paisa"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:visibility="gone"></TextView>
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/siteUserInfoLL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
+        android:background="@color/white"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/siteInfoTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Site : 24234 23423 "
+                android:textColor="@color/dark_gray"></TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/userInfoTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Site : 24234 23423 "
+                android:textColor="@color/dark_gray"></TextView>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/siteUserInfoLL" />
+
+    <TextView
+        android:id="@+id/noRecordMessageTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:fontFamily="@font/poppins_regular"
+        android:text="No Record Found"
+        android:textColor="@color/dark_gray"
+        android:textSize="18dp"
+        android:visibility="gone" />
+
+</RelativeLayout>

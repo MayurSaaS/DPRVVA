@@ -1,26 +1,26 @@
 package com.vvautotest.activities;
 
+import static android.Manifest.permission.ACCESS_BACKGROUND_LOCATION;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -29,24 +29,38 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.Spinner;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.material.navigation.NavigationView;
-import com.vvautotest.MainActivity;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.maps.android.PolyUtil;
+import com.vvautotest.GeofenceService;
 import com.vvautotest.adapter.SideMenuAdapter;
 import com.vvautotest.adapter.SiteSpinnerAdapter;
-import com.vvautotest.adapter.SpinnerAdapter;
 import com.vvautotest.fragments.ClosingStockFragment;
 import com.vvautotest.fragments.DMCEntryFragment;
 import com.vvautotest.fragments.DPRDWRFragment;
@@ -63,18 +77,41 @@ import com.vvautotest.fragments.PreSaleSiteSurwayFragment;
 import com.vvautotest.fragments.ProgressEntryFragment;
 import com.vvautotest.fragments.ReceiptStockFragment;
 import com.vvautotest.location.LocationTrack;
+import com.vvautotest.model.Action;
 import com.vvautotest.model.MenuData;
-import com.vvautotest.model.SpinnerData;
+import com.vvautotest.model.Site;
+import com.vvautotest.model.User;
+import com.vvautotest.reciever.GeofenceBroadcastReceiver;
 import com.vvautotest.utils.AppUtils;
 import com.vvautotest.utils.DummyData;
+import com.vvautotest.utils.GeofenceManager;
+import com.vvautotest.utils.L;
+import com.vvautotest.utils.ServerConfig;
+import com.vvautotest.utils.SessionManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class HomeActivity extends AppCompatActivity implements LocationListener {
+public class HomeActivity extends BaseActivity implements BaseActivity.BaseClassListener {
+
+
+    public static final String GEOFENCE_ID = "RLOGICAL";
+    private boolean isMonitoring = false;
+
+    public HashMap<String, LatLng> LOCATION_LIST = new HashMap<String, LatLng>();
 
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
@@ -85,36 +122,53 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     ImageView navigationIcon;
 
 
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
+    @BindView(R.id.expandableListView)
+    ExpandableListView expandableListView;
     LinearLayoutManager linearLayoutManager;
-    ArrayList<MenuData> MenuDataArrayList;
     SideMenuAdapter sideMenuAdapter;
-
+    List<MenuData> headerList = new ArrayList<>();
+    HashMap<MenuData, List<MenuData>> childList = new HashMap<>();
 
     boolean doubleBackToExitPressedOnce = false;
 
-    private ArrayList<String> permissionsToRequest;
-    private ArrayList<String> permissionsRejected = new ArrayList();
-    private ArrayList<String> permissions = new ArrayList();
 
-    private final static int ALL_PERMISSIONS_RESULT = 101;
     LocationTrack locationTrack;
 
-    private LocationManager locationManager;
-    private String provider;
 
-    ArrayList<SpinnerData> categoryDataArrayList;
+
+    ArrayList<Site> sitesArrayList;
 
     @BindView(R.id.spinner1)
     TextView spinner1;
+    @BindView(R.id.nameTV)
+    TextView nameTV;
+
+    SessionManager sessionManager;
+    User currentUser;
+    Site selectedSite;
+    @BindView(R.id.latlongTV)
+    TextView latlongTV;
+
+    ArrayList<LatLng> polyLatLng;
+    GeofenceBroadcastReceiver geofenceBroadcastReceiver;
+    HomePageActionsListenr homePageActionsListenr;
+
+    ProgressDialog progressDialog;
+    LatLng currentLatLong;
+    boolean isLocationLoad = true;
+    boolean currentPointPolygonStatus = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
+        sessionManager = new SessionManager(this);
+        currentUser = sessionManager.getUserDetails();
+        setBaseListener(this);
         init();
+        updateUserView();
         loadSpinner();
         drawerLayout = findViewById(R.id.my_drawer_layout);
         navigationView = findViewById(R.id.navigationView);
@@ -122,82 +176,108 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
 
-        setTitle(AppUtils.Menu.HOME);
-        displayFragment(AppUtils.AppRoute.ROUTE_HOME);
-        closeDrawer();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Getting Location Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        getLastUpdatedLocation();
+        //    getSites();
+    }
 
-        permissions.add(ACCESS_FINE_LOCATION);
-        permissions.add(ACCESS_COARSE_LOCATION);
-
-        permissionsToRequest = findUnAskedPermissions(permissions);
-        //get the permissions we have asked for before but are not granted..
-        //we will store this in a global list to access later.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (permissionsToRequest.size() > 0)
-                requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
-            else {
-                startLocationTrack();
-            }
+    public void loadSites(){
+        if (currentUser.sites != null) {
+            sitesArrayList.addAll(currentUser.sites);
         }
-        loadSideMenu();
-        showSiteSelectionDialog();
     }
 
-    private void loadSideMenu()
-    {
-        MenuDataArrayList = DummyData.loadMenu(this);
-        sideMenuAdapter = new SideMenuAdapter(this, MenuDataArrayList);
-        linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(sideMenuAdapter);
-        sideMenuAdapter.setOnVideoClickListener(new SideMenuAdapter.OnMenuClickListener() {
+    private void setHomePage(){
+        displayFragment(AppUtils.AppRoute.ROUTE_HOME, AppUtils.Menu.HOME);
+    }
+
+    private void populateExpandableList() {
+        sideMenuAdapter = new SideMenuAdapter(this, headerList, childList);
+        expandableListView.setAdapter(sideMenuAdapter);
+
+        expandableListView.setOnGroupClickListener((parent, v, groupPosition, id) -> {
+            if (headerList.get(groupPosition).isGroup) {
+                if (!headerList.get(groupPosition).hasChildren) {
+                    displayFragment(headerList.get(groupPosition).getId(), "Logout");
+                }
+            }
+            for (int i = 0; i < headerList.size(); i++) {
+                MenuData menu = headerList.get(i);
+                if (headerList.get(groupPosition).name.equalsIgnoreCase(menu.name)) {
+                    headerList.get(groupPosition).setSelected(true);
+                } else {
+                    headerList.get(i).setSelected(false);
+                }
+            }
+            sideMenuAdapter.updateData(headerList);
+            //  menuSelection(getTitle(1));
+            return false;
+        });
+
+        expandableListView.setOnChildClickListener((parent, v, groupPosition, childPosition, id) -> {
+            if (childList.get(headerList.get(groupPosition)) != null) {
+                MenuData model = childList.get(headerList.get(groupPosition)).get(childPosition);
+                getAction(model.getId(), model.subName);
+            //    displayFragment(model.getId(), model.subName);
+                //    AppUtils.showToast(HomeActivity.this, model.subName + " " + model.detailName);
+            }
+            return false;
+        });
+
+        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
             @Override
-            public void onMenuClick(int position, View v) {
-                MenuData data = MenuDataArrayList.get(position);
-                displayFragment(data.getAction());
+            public void onGroupExpand(int groupPosition) {
+                int len = sideMenuAdapter.getGroupCount();
+
+                for (int i = 0; i < len; i++) {
+                    if (i != groupPosition) {
+                        expandableListView.collapseGroup(i);
+                    }
+                }
             }
         });
+        //    menuSelection("Home");
     }
 
-    private void loadSpinner()
-    {
-        categoryDataArrayList = DummyData.loadSite();
-        spinner1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showSiteSelectionDialog();
+
+    private void loadSpinner() {
+        sitesArrayList = new ArrayList<>();
+
+        spinner1.setOnClickListener(v -> {
+            if (sitesArrayList.size() > 1) {
+             //   showSiteSelectionDialog();
             }
         });
-        spinner1.setText("Site One");
+        //    spinner1.setText("Site One");
     }
 
-    public void showSiteSelectionDialog(){
+    public void showSiteSelectionDialog() {
         AlertDialog dialog = new AlertDialog.Builder(HomeActivity.this).create();
         final View customLayout = getLayoutInflater().inflate(R.layout.site_selection_dailog, null);
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.setCancelable(false);
         dialog.setView(customLayout);
-        TextView site1 = customLayout.findViewById(R.id.site1);
-        TextView site2 = customLayout.findViewById(R.id.site2);
-        TextView site3 = customLayout.findViewById(R.id.site3);
 
-        site1.setOnClickListener(new View.OnClickListener() {
+        ListView listView = customLayout.findViewById(R.id.list);
+        SiteSpinnerAdapter adapter = new SiteSpinnerAdapter(getApplicationContext(), sitesArrayList);
+
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                spinner1.setText("Site One");
-                dialog.dismiss();
-            }
-        });
-        site2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                spinner1.setText("Site Two");
-                dialog.dismiss();
-            }
-        });
-        site3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                spinner1.setText("Site Three");
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+               /* Site dataModel = sitesArrayList.get(position);
+                sessionManager.saveSelectedSite(dataModel);
+                spinner1.setText(dataModel.name);
+                selectedSite = sessionManager.getSelectedSite();
+                getMenuItems();
+                loadPolygonAndSite();
+                if(homePageActionsListenr != null)
+                {
+                    homePageActionsListenr.onSiteChange(selectedSite);
+                }*/
                 dialog.dismiss();
             }
         });
@@ -210,8 +290,9 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
     }
 
-    public void displayFragment(int position) {
+    public void displayFragment(int position, String title) {
         Fragment fragment = null;
+        Bundle args = null;
         switch (position) {
             case AppUtils.AppRoute.ROUTE_HOME:
                 setTitle(getResources().getString(R.string.ad_menu_1));
@@ -219,11 +300,19 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                 break;
             case AppUtils.AppRoute.ROUTE_PHOTOS:
                 setTitle(getResources().getString(R.string.ad_menu_2));
+                args = new Bundle();
+                args.putString("menuId", String.valueOf(position));
+                args.putBoolean("currentPointPolygonStatus",    currentPointPolygonStatus);
                 fragment = new PhotosFragment();
+                fragment.setArguments(args);
                 break;
             case AppUtils.AppRoute.ROUTE_DPR_DWR_PDF:
                 setTitle(getResources().getString(R.string.ad_menu_3));
+                args = new Bundle();
+                args.putBoolean("currentPointPolygonStatus",    currentPointPolygonStatus);
+                args.putString("menuId", String.valueOf(position));
                 fragment = new DPRDWRFragment();
+                fragment.setArguments(args);
                 break;
             case AppUtils.AppRoute.ROUTE_MANPOWER_ENTRY:
                 setTitle(getResources().getString(R.string.ad_menu_4));
@@ -270,8 +359,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                 fragment = new PreSaleSiteSurwayFragment();
                 break;
             case AppUtils.AppRoute.ROUTE_LOGOUT:
-                setTitle(getResources().getString(R.string.ad_menu_7));
-                fragment = new HomeFragment();
+                sessionManager.logout();
                 break;
             default:
                 break;
@@ -279,8 +367,8 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
         if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).
-                    addToBackStack(null).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, title).
+                    addToBackStack(title).commit();
             closeDrawer();
         } else {
             Log.e("MainActivity", "Error in creating fragment");
@@ -305,93 +393,9 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     }
 
 
-    private ArrayList findUnAskedPermissions(ArrayList<String> wanted) {
-        ArrayList result = new ArrayList();
-        for (String perm : wanted) {
-            if (!hasPermission(perm)) {
-                result.add(perm);
-            }
-        }
-
-        return result;
-    }
-
-    private boolean hasPermission(String permission) {
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                return (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
-            }
-
-        return true;
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-
-            case ALL_PERMISSIONS_RESULT:
-                for (String perms : permissionsToRequest) {
-                    if (!hasPermission(perms)) {
-                        permissionsRejected.add(perms);
-                    }
-                }
-                if (permissionsRejected.size() > 0) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (shouldShowRequestPermissionRationale(permissionsRejected.get(0))) {
-                            showMessageOKCancel("These permissions are mandatory for the application. Please allow access.",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                requestPermissions(permissionsRejected.toArray(new String[permissionsRejected.size()]), ALL_PERMISSIONS_RESULT);
-                                            }
-                                        }
-                                    });
-                            return;
-                        }
-                    }
-                } else {
-                    startLocationTrack();
-                }
-                break;
-        }
-    }
-
-    public void startLocationTrack() {
-        this.locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        provider = locationManager.getBestProvider(criteria, false);
-//provider = LocationManager.GPS_PROVIDER; // We want to use the GPS
-// Initialize the location fields
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        Location location = locationManager.getLastKnownLocation(provider);
 
 
-/*
-        locationTrack = new LocationTrack(HomeActivity.this);
-        if (locationTrack.canGetLocation()) {
-            double longitude = locationTrack.getLongitude();
-            double latitude = locationTrack.getLatitude();
-        //    Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
-        } else {
-            locationTrack.showSettingsAlert();
-        }
-*/
-    }
 
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(HomeActivity.this)
-                .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
-                .create()
-                .show();
-    }
 
     @Override
     protected void onDestroy() {
@@ -405,26 +409,34 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locationManager.requestLocationUpdates(provider, 0, 0, this);
-    }
-
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        double lat = location.getLatitude();
-        double lng = location.getLongitude();
-     //   Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(lat) + "\nLatitude:" + Double.toString(lng), Toast.LENGTH_SHORT).show();
-
-    }
-
-    @Override
     public void onBackPressed() {
+        try {
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.my_drawer_layout);
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                int fragments = getSupportFragmentManager().getBackStackEntryCount();
+                if (fragments == 1) {
+                    if (doubleBackToExitPressedOnce) {
+                        finish();
+                    }
+                    this.doubleBackToExitPressedOnce = true;
+                    Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+                    new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
+                } else if (getFragmentManager().getBackStackEntryCount() > 1) {
+                    getFragmentManager().popBackStack();
+                } else {
+                    super.onBackPressed();
+                    String title = getSupportFragmentManager().getBackStackEntryAt(fragments-2).getName();
+                    setTitle(title);
+                }
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
-        if (doubleBackToExitPressedOnce) {
+        /*if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
             return;
         }
@@ -438,6 +450,543 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
             public void run() {
                 doubleBackToExitPressedOnce = false;
             }
-        }, 2000);
+        }, 2000);*/
     }
+
+    public void updateUserView()
+    {
+        nameTV.setText(currentUser.fName + " " + currentUser.mName + " " +  currentUser.lName);
+    }
+
+   /* private void getSites(){
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        JSONObject jsonObject = new JSONObject();
+
+        AndroidNetworking.post(ServerConfig.Site_URL)
+                .addJSONObjectBody(jsonObject) // posting json
+                .setTag("Sites")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                                     @Override
+                                     public void onResponse(JSONArray response) {
+                                         progressDialog.dismiss();
+                                         L.printInfo(response.toString());
+                                         ObjectMapper om = new ObjectMapper();
+                                         try {
+                                             sitesArrayList = new ArrayList<>();
+                                             sitesArrayList = om.readValue(response.toString(), new TypeReference<List<Site>>(){});
+                                             showSiteSelectionDialog();
+                                         } catch (IOException e) {
+                                             e.printStackTrace();
+                                         }
+                                     }
+
+                                     @Override
+                                     public void onError(ANError anError) {
+                                         L.printError(anError.toString());
+                                         progressDialog.dismiss();
+                                    }
+                                 }
+                );
+
+    }*/
+    private void getMenuItems(){
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userID", currentUser.userID);
+            jsonObject.put("siteID", selectedSite.id);
+        }catch (JSONException ex)
+        {
+            ex.printStackTrace();
+        }
+        AndroidNetworking.post(ServerConfig.Menus_URL)
+                .addJSONObjectBody(jsonObject) // posting json
+                .setTag("Menus")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                                     @Override
+                                     public void onResponse(JSONArray response) {
+                                         progressDialog.dismiss();
+                                         L.printInfo(response.toString());
+                                         parseSideBarMenu(response);
+                                         populateExpandableList();
+                                     }
+                                     @Override
+                                     public void onError(ANError anError) {
+                                         L.printError(anError.toString());
+                                         progressDialog.dismiss();
+                                    }
+                                 }
+                );
+
+    }
+
+    public void parseSideBarMenu(JSONArray jsonArray)
+    {
+        try {
+                    if (jsonArray.length() > 0) {
+                        ArrayList<MenuData> tempMenu = new ArrayList<>();
+                        for (int i = 0, size = jsonArray.length(); i < size; i++) {
+                            String name = "";
+                            String subName = "";
+                            String detailName = "";
+                            String menuIcon = "";
+                            String subMenuIcon = "";
+
+                            int id = 0;
+                            JSONObject objectInArray = jsonArray.getJSONObject(i);
+                            if (objectInArray.has("name")) {
+                                name = objectInArray.getString("name");
+                            }
+                            if (objectInArray.has("subName")) {
+                                subName = objectInArray.getString("subName");
+                            }
+                            if (objectInArray.has("detailName")) {
+                                detailName = objectInArray.getString("detailName");
+                            }
+                            if (objectInArray.has("menuIcon")) {
+                                menuIcon = objectInArray.getString("menuIcon");
+                            }if (objectInArray.has("subMenuIcon")) {
+                                subMenuIcon = objectInArray.getString("subMenuIcon");
+                            }
+                            if (objectInArray.has("id")) {
+                                String text = objectInArray.getString("id");
+                                if(!"".equalsIgnoreCase(text))
+                                { id = Integer.parseInt(text);}
+                            }
+                            tempMenu.add(new MenuData(id, name,
+                                    subName, detailName, false, true, false, menuIcon, subMenuIcon));
+                        }
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                            Map<String, List<MenuData>> studlistGrouped =
+                                    tempMenu.stream().collect(Collectors.groupingBy(w -> w.name));
+
+                            headerList = new ArrayList<>();
+                            childList = new HashMap<>();
+                            int count = 0;
+                            for (Map.Entry<String,List<MenuData>> entry : studlistGrouped.entrySet())
+                            {
+                                System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+
+                                List<MenuData> list = entry.getValue();
+                                MenuData head = new MenuData(count +1, entry.getKey() ,  ""
+                                        , "", true, true, false, list.get(0).menuIcon, list.get(0).subMenuIcon);
+                                headerList.add(head);
+                                childList.put(head, list);
+                            }
+
+                            //Add Logout
+                            MenuData head = new MenuData(14, "Logout" ,  ""
+                                    , "", false,  true, false, "logout", "logout");
+                            headerList.add(head);
+                            childList.put(head, null);
+                        }
+                        }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void setHomePageActionsListenr(HomePageActionsListenr homePageActionsListenr){
+        this.homePageActionsListenr = homePageActionsListenr;
+    }
+
+    @Override
+    public void onLocationChange(LatLng latLng) {
+        currentLatLong = latLng;
+        if(isLocationLoad)
+        {
+            if(progressDialog != null)
+            {
+                progressDialog.dismiss();
+                progressDialog = null;
+            }
+            loadSites();
+            setHomePage();
+            checkPolygonAndAutoSelectSite();
+            isLocationLoad = false;
+        }else
+        {
+            checkPolygonAndAutoSelectSite();
+        }
+        if(homePageActionsListenr != null)
+        {
+            homePageActionsListenr.onLocationChange(latLng);
+        }
+    }
+
+    public void checkPolygonAndAutoSelectSite(){
+        if(sitesArrayList != null && sitesArrayList.size() > 0)
+        {
+            int index = -1;
+            for (int j = 0;  j< sitesArrayList.size(); j++) {
+                Site site = sitesArrayList.get(j);
+                if(site != null)
+                {
+                    if(site.geoFenceApp != null)
+                    {
+                        String strLatLng = site.geoFenceApp;
+                        ArrayList<LatLng> polyLatLng = new ArrayList<>();
+                        if (!"".equals(strLatLng))
+                        {
+                            try {
+                                String parts[] = strLatLng.trim().split("\n");
+                                for(String part: parts) {
+                                    if(!part.contains("#"))
+                                    {
+                                        String latLong[] = part.trim().split(",");
+                                        if(latLong.length == 2)
+                                        {
+                                            polyLatLng.add( new LatLng( Double.parseDouble(latLong[0]),Double.parseDouble(latLong[1])) ); // Should match last point
+                                        }
+                                    }
+                                }
+                                boolean contains1 = PolyUtil.containsLocation(currentLatLong.latitude, currentLatLong.longitude, polyLatLng, true);
+                                if(contains1)
+                                {
+                                    index = j;
+                                    currentPointPolygonStatus = true;
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(index == -1)
+            {
+                currentPointPolygonStatus = false;
+                Site dataModel = sitesArrayList.get(0);
+                if(selectedSite == null)
+                {
+                    sessionManager.saveSelectedSite(dataModel);
+                    spinner1.setText(dataModel.name);
+                    selectedSite = sessionManager.getSelectedSite();
+                    getMenuItems();
+                    if(homePageActionsListenr != null)
+                    {
+                        homePageActionsListenr.onSiteChange(selectedSite);
+                    }
+                }else {
+                    if(!dataModel.name.equalsIgnoreCase(selectedSite.name))
+                    {
+                        sessionManager.saveSelectedSite(dataModel);
+                        spinner1.setText(dataModel.name);
+                        selectedSite = sessionManager.getSelectedSite();
+                        getMenuItems();
+                        if(homePageActionsListenr != null)
+                        {
+                            homePageActionsListenr.onSiteChange(selectedSite);
+                        }
+                    }else
+                    {
+                        if(homePageActionsListenr != null)
+                        {
+                            homePageActionsListenr.onSiteRemainSame(selectedSite);
+                        }
+                   /* if(homePageActionsListenr != null)
+                    {
+                        homePageActionsListenr.onSiteChange(selectedSite);
+                    }*/
+                    }
+                }
+                if(homePageActionsListenr != null)
+                {
+                    homePageActionsListenr.onPointInPolygon(currentPointPolygonStatus);
+                }
+
+            }else
+            {
+                Site dataModel = sitesArrayList.get(index);
+                if(selectedSite == null)
+                {
+                    sessionManager.saveSelectedSite(dataModel);
+                    spinner1.setText(dataModel.name);
+                    selectedSite = sessionManager.getSelectedSite();
+                    getMenuItems();
+                    if(homePageActionsListenr != null)
+                    {
+                        homePageActionsListenr.onSiteChange(selectedSite);
+                    }
+                }else {
+                    if(!dataModel.name.equalsIgnoreCase(selectedSite.name))
+                    {
+                        sessionManager.saveSelectedSite(dataModel);
+                        spinner1.setText(dataModel.name);
+                        selectedSite = sessionManager.getSelectedSite();
+                        getMenuItems();
+                        if(homePageActionsListenr != null)
+                        {
+                            homePageActionsListenr.onSiteChange(selectedSite);
+                        }
+                    }else
+                    {
+                        if(homePageActionsListenr != null)
+                        {
+                            homePageActionsListenr.onSiteRemainSame(selectedSite);
+                        }
+                   /* if(homePageActionsListenr != null)
+                    {
+                        homePageActionsListenr.onSiteChange(selectedSite);
+                    }*/
+                    }
+                }
+                if(homePageActionsListenr != null)
+                {
+                    homePageActionsListenr.onPointInPolygon(currentPointPolygonStatus);
+                }
+
+
+            }
+
+        }
+    }
+
+
+    public void loadPolygonAndSite(){
+
+        int index = 0;
+        for (int j = 0;  j< sitesArrayList.size(); j++) {
+            Site site = sitesArrayList.get(j);
+            if(site != null)
+            {
+                if(site.geoFenceApp != null)
+                {
+                    String strLatLng = site.geoFenceApp;
+                    ArrayList<LatLng> polyLatLng = new ArrayList<>();
+                    if (!"".equals(strLatLng))
+                    {
+                        try {
+                            JSONObject jsonObject = new JSONObject(strLatLng);
+                            JSONArray jsonArray = jsonObject.getJSONArray("coordinates");
+                            JSONArray jsonArray1 = jsonArray.getJSONArray(0);
+
+                            for (int i = 0; i < jsonArray1.length() ; i++) {
+                                JSONArray jsonArray2 = jsonArray1.getJSONArray(i);
+                                polyLatLng.add( new LatLng( jsonArray2.getDouble(1), jsonArray2.getDouble(0) ) ); // Should match last point
+                            }
+                            boolean contains1 = PolyUtil.containsLocation(currentLatLong.latitude, currentLatLong.longitude, polyLatLng, true);
+                            if(contains1)
+                            {
+                                currentPointPolygonStatus = true;
+                                index = j;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+
+
+        Site temp  = sitesArrayList.get(index);
+        if(index != 0)
+        {
+            if(selectedSite.name.equalsIgnoreCase(temp.name))
+            {
+            }else
+            {
+                sessionManager.saveSelectedSite(temp);
+                spinner1.setText(temp.name);
+                selectedSite = sessionManager.getSelectedSite();
+                getMenuItems();
+            }
+            if(homePageActionsListenr != null)
+            {
+                homePageActionsListenr.onPointInPolygon(true);
+            }
+
+        }else
+        {
+
+            if(selectedSite.name.equalsIgnoreCase(temp.name))
+            {
+
+            }else
+            {
+                sessionManager.saveSelectedSite(temp);
+                spinner1.setText(temp.name);
+                selectedSite = sessionManager.getSelectedSite();
+                getMenuItems();
+            }
+            if(homePageActionsListenr != null)
+            {
+                homePageActionsListenr.onPointInPolygon(currentPointPolygonStatus);
+            }
+        }
+/*
+        sessionManager.saveSelectedSite(sitesArrayList.get(index));
+        spinner1.setText(sitesArrayList.get(index).name);
+        selectedSite = sessionManager.getSelectedSite();
+        getMenuItems();
+        loadPolygonAndSite();
+        if(homePageActionsListenr != null)
+        {
+            homePageActionsListenr.onSiteChange(selectedSite);
+        }
+
+        if(selectedSite != null)
+        {
+            if(selectedSite.geoFenceApp != null)
+            {
+                String strLatLng = selectedSite.geoFenceApp;
+                ArrayList<LatLng> polyLatLng = new ArrayList<>();
+                if (!"".equals(strLatLng))
+                {
+                    try {
+                        JSONObject jsonObject = new JSONObject(strLatLng);
+                        JSONArray jsonArray = jsonObject.getJSONArray("coordinates");
+                        JSONArray jsonArray1 = jsonArray.getJSONArray(0);
+
+                        for (int i = 0; i < jsonArray1.length() ; i++) {
+                            JSONArray jsonArray2 = jsonArray1.getJSONArray(i);
+                            polyLatLng.add( new LatLng( jsonArray2.getDouble(1), jsonArray2.getDouble(0) ) ); // Should match last point
+                        }
+                        boolean contains1 = PolyUtil.containsLocation(currentLatLong.latitude, currentLatLong.longitude, polyLatLng, true);
+                        currentPointPolygonStatus = contains1;
+                        if(homePageActionsListenr != null)
+                        {
+                            homePageActionsListenr.onPointInPolygon(contains1);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }else
+                {
+                    if(homePageActionsListenr != null) {
+                        currentPointPolygonStatus = false;
+                        homePageActionsListenr.onPointInPolygon(false);
+                    }
+                }
+            }else
+            {
+                if(homePageActionsListenr != null) {
+                    currentPointPolygonStatus = false;
+                    homePageActionsListenr.onPointInPolygon(false);
+                }
+            }
+        }else
+        {
+            if(homePageActionsListenr != null) {
+                currentPointPolygonStatus = false;
+                homePageActionsListenr.onPointInPolygon(false);
+            }
+        }
+*/
+    }
+
+
+    public interface HomePageActionsListenr{
+        void onSiteChange(Site site);
+        void onSiteRemainSame(Site site);
+        void onLocationChange(LatLng latLng);
+        void onPointInPolygon(boolean isPointIn);
+    }
+
+
+    public void getAction(int menuId, String title) {
+        ProgressDialog progressDialog = new ProgressDialog(HomeActivity.this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userID", currentUser.userID);
+            jsonObject.put("siteID", selectedSite.id);
+            jsonObject.put("menuID", menuId);
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+
+        AndroidNetworking.post(ServerConfig.Action_Details_URL)
+                .addJSONObjectBody(jsonObject) // posting json
+                .setTag("Actions")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                                    @Override
+                                    public void onResponse(JSONArray response) {
+                                            progressDialog.dismiss();
+                                        L.printInfo("Action Details : " + response.toString());
+                                        ObjectMapper om = new ObjectMapper();
+                                        try {
+                                            List<Action> list = om.readValue(response.toString(), new TypeReference<List<Action>>() {});
+                                            boolean isViewAllowed = false;
+                                            boolean isAddAllowed = false;
+                                            boolean isEditAllowed = false;
+                                            boolean isDeleteAllowed = false;
+                                            boolean isDownloadAllowed = false;
+                                            boolean isUploadAllowed = false;
+                                            boolean isRequestAllowed = false;
+                                            boolean isApproveAllowed = false;
+                                            for (Action a: list) {
+                                                L.printError("Name : " + a.getName());
+                                                if("View".equalsIgnoreCase(a.getName()))
+                                                {
+                                                    isViewAllowed = true;
+                                                    AppUtils.setActionValueWithKey(HomeActivity.this, isViewAllowed, AppUtils.Action.Action_View);
+                                                }else if("Add".equalsIgnoreCase(a.getName()))
+                                                {
+                                                    isAddAllowed = true;
+                                                    AppUtils.setActionValueWithKey(HomeActivity.this, isAddAllowed, AppUtils.Action.Action_Add);
+                                                }else if("Edit".equalsIgnoreCase(a.getName()))
+                                                {
+                                                    isEditAllowed = true;
+                                                    AppUtils.setActionValueWithKey(HomeActivity.this, isEditAllowed, AppUtils.Action.Action_Edit);
+                                                }else if("Delete".equalsIgnoreCase(a.getName()))
+                                                {
+                                                    isDeleteAllowed = true;
+                                                    AppUtils.setActionValueWithKey(HomeActivity.this, isDeleteAllowed, AppUtils.Action.Action_Delete);
+                                                }else if("Download".equalsIgnoreCase(a.getName()))
+                                                {
+                                                    isDownloadAllowed = true;
+                                                    AppUtils.setActionValueWithKey(HomeActivity.this, isDownloadAllowed, AppUtils.Action.Action_Download);
+                                                }else if("Upload".equalsIgnoreCase(a.getName()))
+                                                {
+                                                    isUploadAllowed = true;
+                                                    AppUtils.setActionValueWithKey(HomeActivity.this, isUploadAllowed, AppUtils.Action.Action_Upload);
+                                                }else if("Request".equalsIgnoreCase(a.getName()))
+                                                {
+                                                    isRequestAllowed = true;
+                                                    AppUtils.setActionValueWithKey(HomeActivity.this, isRequestAllowed, AppUtils.Action.Action_Request);
+                                                }else if("Approve".equalsIgnoreCase(a.getName()))
+                                                {
+                                                    isApproveAllowed = true;
+                                                    AppUtils.setActionValueWithKey(HomeActivity.this, isApproveAllowed, AppUtils.Action.Action_Approve);
+                                                }
+                                            }
+
+                                            if(isViewAllowed)
+                                            {
+                                                displayFragment(menuId, title);
+                                            }else{
+                                                AppUtils.showToast(HomeActivity.this, "Not Access to View");
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(ANError anError) {
+                                        L.printError(anError.toString());
+                                        progressDialog.dismiss();
+                                    }
+                                }
+                );
+    }
+
 }

@@ -79,7 +79,7 @@ public class DummyData {
 
     public static ArrayList<MenuData> loadMenu(Context context) {
         ArrayList<MenuData> list = new ArrayList<>();
-        list.add(new MenuData(AppUtils.Menu.HOME, context.getResources().getDrawable(R.drawable.home),
+        /*list.add(new MenuData(AppUtils.Menu.HOME, context.getResources().getDrawable(R.drawable.home),
                 AppUtils.AppRoute.ROUTE_HOME, ""));
         list.add(new MenuData(AppUtils.Menu.PHOTOS, context.getResources().getDrawable(R.drawable.image_gallery),
                 AppUtils.AppRoute.ROUTE_PHOTOS, ""));
@@ -108,16 +108,16 @@ public class DummyData {
         list.add(new MenuData(AppUtils.Menu.PRE_SALE, context.getResources().getDrawable(R.drawable.site_surway),
                 AppUtils.AppRoute.ROUTE_PRE_SALE, ""));
         list.add(new MenuData(AppUtils.Menu.LOGOUT, context.getResources().getDrawable(R.drawable.logout),
-                AppUtils.AppRoute.ROUTE_LOGOUT, ""));
+                AppUtils.AppRoute.ROUTE_LOGOUT, ""));*/
         return list;
     }
 
     public static ArrayList<MenuData> loadHomeMenu(Context context) {
         ArrayList<MenuData> list = new ArrayList<>();
-        list.add(new MenuData(AppUtils.Menu.ADD_PHOTOS, context.getResources().getDrawable(R.drawable.image_gallery), AppUtils.AppRoute.ROUTE_ADD_PHOTOS, ""));
+     /*   list.add(new MenuData(AppUtils.Menu.ADD_PHOTOS, context.getResources().getDrawable(R.drawable.image_gallery), AppUtils.AppRoute.ROUTE_ADD_PHOTOS, ""));
         list.add(new MenuData(AppUtils.Menu.ADD_PDF, context.getResources().getDrawable(R.drawable.pdf_file), AppUtils.AppRoute.ROUTE_ADD_PDF, ""));
         list.add(new MenuData(AppUtils.Menu.ADD_PROGRESS, context.getResources().getDrawable(R.drawable.process), AppUtils.AppRoute.ROUTE_ADD_PROGRESS, ""));
         list.add(new MenuData(AppUtils.Menu.ADD_MANPOWER_ATTENDANCE, context.getResources().getDrawable(R.drawable.manpower), AppUtils.AppRoute.ROUTE_ADD_MANPOWER_ATTENDANCE, ""));
-       return list;
+  */     return list;
     }
 }
