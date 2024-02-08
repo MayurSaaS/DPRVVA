@@ -125,6 +125,9 @@ public class SideMenuAdapter  extends BaseExpandableListAdapter {
             if("logout".equals(getGroup(groupPosition).menuIcon))
             {
                 menuImage.setImageDrawable(context.getResources().getDrawable(R.drawable.logout));
+            }else if("upload".equals(getGroup(groupPosition).menuIcon))
+            {
+                menuImage.setImageDrawable(context.getResources().getDrawable(R.drawable.upload));
             }else
             {
                 Glide.with(menuImage).load("http://" + getGroup(groupPosition).menuIcon).into(menuImage);

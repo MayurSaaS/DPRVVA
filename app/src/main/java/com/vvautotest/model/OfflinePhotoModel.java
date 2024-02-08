@@ -12,7 +12,7 @@ public class OfflinePhotoModel {
     String category_name;
     @ColumnInfo(name = "category_id")
     String category_id;
-    @ColumnInfo(name = "category_id")
+    @ColumnInfo(name = "description")
     String description;
     @ColumnInfo(name = "image_extension")
     String image_extension;

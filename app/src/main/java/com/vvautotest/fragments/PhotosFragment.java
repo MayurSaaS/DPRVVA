@@ -210,6 +210,8 @@ public class PhotosFragment extends Fragment implements HomeActivity.HomePageAct
         progressDialog.setMessage("Loading...");
         progressDialog.setCancelable(false);
         progressDialog.show();
+        L.printError("Photos :"+ ServerConfig.Photos_URL + selectedSite.id + "/"
+                + selectedUserId + "/");
         AndroidNetworking.get(ServerConfig.Photos_URL + selectedSite.id + "/"
                         + selectedUserId + "/")
                 .setTag("Gallery")
@@ -219,7 +221,7 @@ public class PhotosFragment extends Fragment implements HomeActivity.HomePageAct
                                  @Override
                                  public void onResponse(String response) {
                                      progressDialog.dismiss();
-                                     L.printInfo(response.toString());
+                                     L.printInfo(response);
                                      try {
                                          JSONArray parseJson = XMLParser.parseHtmlToJSON2(response);
                                          ObjectMapper om = new ObjectMapper();

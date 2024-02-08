@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,7 @@ public class AppUtils {
 
         public static final int ROUTE_ADD_PHOTOS = 15;
         public static final int ROUTE_ADD_PDF = 16;
+        public static final int ROUTE_UPLOAD_DOCUMENT = 19;
         public static final int ROUTE_ADD_PROGRESS = 17;
         public static final int ROUTE_ADD_MANPOWER_ATTENDANCE = 18;
 
@@ -111,16 +113,19 @@ public class AppUtils {
     }
 
 
-    public static String getDeviceId()
+    public static String getDeviceId(Context context)
     {
-        return "35" + //we make this look like a valid IMEI
+       /* return "35" + //we make this look like a valid IMEI
                 Build.BOARD.length()%10+ Build.BRAND.length()%10 +
                 Build.SUPPORTED_ABIS.length%10 + Build.DEVICE.length()%10 +
                 Build.DISPLAY.length()%10 + Build.HOST.length()%10 +
                 Build.ID.length()%10 + Build.MANUFACTURER.length()%10 +
                 Build.MODEL.length()%10 + Build.PRODUCT.length()%10 +
                 Build.TAGS.length()%10 + Build.TYPE.length()%10 +
-                Build.USER.length()%10 ; //13 digits
+                Build.USER.length()%10 ; //13 digits*/
+
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+
     }
 
     public static boolean CheckCoordinateLiesInPolygon(ArrayList<LatLng> list, LatLng point)

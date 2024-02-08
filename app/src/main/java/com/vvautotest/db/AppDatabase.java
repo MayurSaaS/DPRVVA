@@ -10,7 +10,7 @@ import com.vvautotest.model.Category;
 import com.vvautotest.model.OfflinePhotoModel;
 import com.vvautotest.model.UserItem;
 
-@Database(entities = {Category.class, UserItem.class, OfflinePhotoModel.class},exportSchema = false, version = 3)
+@Database(entities = {Category.class, UserItem.class, OfflinePhotoModel.class},exportSchema = false, version = 4)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract CategoryDao categoryDao();

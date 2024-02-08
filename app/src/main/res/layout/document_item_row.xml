@@ -1,40 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:layout_height="wrap_content">
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/mainCard"
         android:elevation="4dp"
         android:layout_margin="3dp"
         android:layout_weight="1"
+        android:gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="100dp">
-        <LinearLayout
-            android:elevation="5dp"
-            android:layout_alignParentBottom="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:gravity="center"
-                android:fontFamily="@font/poppins_regular"
-                android:textSize="12dp"
-                android:padding="5dp"
-                android:id="@+id/nameTV"
-                android:textColor="@color/black"
-                android:text="Catescs sfs fasf"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+        android:layout_height="130dp">
 
-            </TextView>
-        </LinearLayout>
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/image"
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_centerInParent="true"
             android:layout_marginStart="3dp"
             android:layout_marginTop="3dp"
@@ -43,7 +28,26 @@
             android:src="@drawable/folder"
             app:riv_corner_radius="10dp" />
 
+        <LinearLayout
+            android:elevation="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:gravity="center"
+                android:fontFamily="@font/poppins_regular"
+                android:textSize="12dp"
+                android:padding="5dp"
+                android:maxLines="2"
+                android:id="@+id/nameTV"
+                android:textColor="@color/black"
+                android:text=""
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-    </RelativeLayout>
+            </TextView>
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 </LinearLayout>
