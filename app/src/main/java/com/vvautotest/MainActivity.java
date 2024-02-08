@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         countDownTimer.start();
-        L.printError("Device Id : " + AppUtils.getDeviceId());
+        L.printError("Device Id : " + AppUtils.getDeviceId(MainActivity.this));
 
     }
 
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             jsonObject.put("loginID", user);
             jsonObject.put("password", pass);
-            jsonObject.put("deviceID", AppUtils.getDeviceId());
+            jsonObject.put("deviceID", AppUtils.getDeviceId(this));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
                                                         }
                                                     }
                                                 });
+
                                             }
                                           getUsers();
                                         } catch (IOException e) {

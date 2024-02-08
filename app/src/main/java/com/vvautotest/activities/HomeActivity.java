@@ -76,6 +76,7 @@ import com.vvautotest.fragments.PhotosFragment;
 import com.vvautotest.fragments.PreSaleSiteSurwayFragment;
 import com.vvautotest.fragments.ProgressEntryFragment;
 import com.vvautotest.fragments.ReceiptStockFragment;
+import com.vvautotest.fragments.UploadGalleryFragment;
 import com.vvautotest.location.LocationTrack;
 import com.vvautotest.model.Action;
 import com.vvautotest.model.MenuData;
@@ -304,6 +305,14 @@ public class HomeActivity extends BaseActivity implements BaseActivity.BaseClass
                 args.putString("menuId", String.valueOf(position));
                 args.putBoolean("currentPointPolygonStatus",    currentPointPolygonStatus);
                 fragment = new PhotosFragment();
+                fragment.setArguments(args);
+                break;
+            case AppUtils.AppRoute.ROUTE_UPLOAD_DOCUMENT:
+                setTitle(getResources().getString(R.string.ad_menu_8));
+                args = new Bundle();
+                args.putString("menuId", String.valueOf(position));
+                args.putBoolean("currentPointPolygonStatus",    currentPointPolygonStatus);
+                fragment = new UploadGalleryFragment();
                 fragment.setArguments(args);
                 break;
             case AppUtils.AppRoute.ROUTE_DPR_DWR_PDF:
@@ -584,6 +593,10 @@ public class HomeActivity extends BaseActivity implements BaseActivity.BaseClass
                                 childList.put(head, list);
                             }
 
+                            MenuData upload = new MenuData(AppUtils.AppRoute.ROUTE_UPLOAD_DOCUMENT, "Documents" ,  ""
+                                    , "", false,  true, false, "upload", "upload");
+                            headerList.add(upload);
+                            childList.put(upload, null);
                             //Add Logout
                             MenuData head = new MenuData(14, "Logout" ,  ""
                                     , "", false,  true, false, "logout", "logout");

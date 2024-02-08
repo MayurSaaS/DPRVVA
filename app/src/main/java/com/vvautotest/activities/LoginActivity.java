@@ -1,11 +1,19 @@
 package com.vvautotest.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -45,6 +53,9 @@ public class LoginActivity extends AppCompatActivity {
     TextView deviceIdTV;
     String deviceId;
     SessionManager sessionManager;
+    final int REQUEST_CODE = 101;
+    TelephonyManager telephonyManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,11 +65,44 @@ public class LoginActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
     }
 
+    @SuppressLint("MissingPermission")
     public void init(){
-        deviceId = AppUtils.getDeviceId();
+        deviceId = AppUtils.getDeviceId(this);
+        L.printError("Device Id : " + deviceId);
+        /*// in the below line, we are initializing our variables.
+        telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        // in the below line, we are checking for permissions
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // if permissions are not provided we are requesting for permissions.
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_CODE);
+        }
+
+        // in the below line, we are setting our imei to our text view.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            deviceId = telephonyManager.getImei();
+        }*/
         deviceIdTV.setText("Device ID: " + deviceId);
     }
 
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            // in the below line, we are checking if permission is granted.
+            if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // in the below line, we are setting our imei to our text view.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    deviceId = telephonyManager.getImei();
+                }
+                deviceIdTV.setText("Device ID: " + deviceId);
+            } else {
+                // in the below line, we are displaying toast message
+                // if permissions are not granted.
+             //   Toast.makeText(this, "Permission denied.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     @OnClick(R.id.logInBtn)
     public void onLoginBtnClick()

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/app_background"
+    tools:context=".fragments.HomeFragment">
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/filterLL"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:padding="5dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_marginLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textStyle="bold"
+                    android:text=""
+                    android:paddingLeft="10dp"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    android:background="@drawable/site_spinner_background"
+                    android:gravity="center_vertical"
+                    android:id="@+id/siteSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    />
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/downarrow" />
+            </RelativeLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:padding="5dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_marginLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textStyle="bold"
+                    android:text=""
+                    android:paddingLeft="10dp"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    android:background="@drawable/site_spinner_background"
+                    android:gravity="center_vertical"
+                    android:id="@+id/userSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    />
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/downarrow" />
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:padding="15dp"
+        android:id="@+id/pathll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/back"
+            android:src="@drawable/back_revert_black"
+            android:layout_width="25dp"
+            android:layout_height="25dp"/>
+
+        <TextView
+            android:textStyle="bold"
+            android:layout_marginLeft="5dp"
+            android:text="Documents ->"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/pathTextView"
+            android:layout_marginLeft="5dp"
+            android:text=""
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_below="@+id/pathll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:paddingBottom="90dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <VideoView
+                android:visibility="gone"
+                android:id="@+id/videoview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"></VideoView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:background="#56ffffff"
+        android:id="@+id/buttonLL"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.cardview.widget.CardView
+            android:layout_margin="15dp"
+            android:id="@+id/uploadPhotos"
+            app:cardCornerRadius="25dp"
+            android:layout_weight="1"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/colorPrimaryVariant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textColor="@color/white"
+                    android:padding="15dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center"
+                    android:text="Upload File"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" > </TextView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView><androidx.cardview.widget.CardView
+            android:layout_margin="15dp"
+            android:id="@+id/createFolder"
+        android:layout_weight="1"
+            app:cardCornerRadius="25dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/colorSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textColor="@color/white"
+                    android:padding="15dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center"
+                    android:text="Create Folder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" > </TextView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/wrongSiteMessageLL"
+        android:gravity="center"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:text="@string/wrong_site"
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></TextView>
+    </LinearLayout>
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/noRecordMessageTV"
+        android:fontFamily="@font/poppins_regular"
+        android:textSize="18dp"
+        android:layout_centerInParent="true"
+        android:textColor="@color/dark_gray"
+        android:text="No Record Found"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

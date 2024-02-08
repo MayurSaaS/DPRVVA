@@ -280,9 +280,9 @@ public class BaseActivity extends AppCompatActivity {
             NetworkInfo activeNetInfo = manager.getActiveNetworkInfo();
             if (activeNetInfo != null
                     && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                Toast.makeText(context, "Wifi Connected!", Toast.LENGTH_SHORT).show();
+            ///    Toast.makeText(context, "Wifi Connected!", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(context, "Wifi Not Connected!", Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(context, "Wifi Not Connected!", Toast.LENGTH_SHORT).show();
             }
         }
     }
