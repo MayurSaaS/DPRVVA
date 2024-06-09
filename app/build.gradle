@@ -34,6 +34,9 @@ android {
     packagingOptions {
         resources.excludes.add("META-INF/DEPENDENCIES")
     }
+    packagingOptions {
+        resources.excludes.add("META-INF/DEPENDENCIES")
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
