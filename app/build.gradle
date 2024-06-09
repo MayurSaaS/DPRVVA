@@ -13,8 +13,8 @@ android {
         applicationId "com.vvautotest"
         minSdk 21
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -24,7 +24,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
+
     packagingOptions {
         resources.excludes.add("META-INF/DEPENDENCIES")
     }
@@ -68,6 +74,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:10.0.0'
     implementation files('libs\\org-apache-commons-codec.jar')
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
+
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

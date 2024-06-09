@@ -3,6 +3,8 @@ package com.vvautotest.fragments;
 import static com.vvautotest.utils.ServerConfig.My_Document_URL;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -48,10 +50,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -59,20 +63,27 @@ import android.widget.VideoView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
+import com.androidnetworking.interfaces.UploadProgressListener;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.model.LatLng;
 import com.vvautotest.R;
 import com.vvautotest.activities.FullImageViewActivity;
 import com.vvautotest.activities.HomeActivity;
+import com.vvautotest.activities.VVVideoPlayer;
 import com.vvautotest.adapter.DocumentGalleryAdapter;
+import com.vvautotest.adapter.SiteSpinnerAdapter;
+import com.vvautotest.adapter.UserSpinnerAdapter;
 import com.vvautotest.model.Image;
 import com.vvautotest.model.ImageData;
+import com.vvautotest.model.PhotoPathImage;
 import com.vvautotest.model.Site;
 import com.vvautotest.model.User;
 import com.vvautotest.model.UserItem;
+import com.vvautotest.service.UploadVideoService;
 import com.vvautotest.utils.AppUtils;
 import com.vvautotest.utils.DateUtils;
 import com.vvautotest.utils.L;
@@ -99,9 +110,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Queue;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -110,12 +124,17 @@ import butterknife.OnClick;
 
 public class UploadGalleryFragment extends Fragment implements HomeActivity.HomePageActionsListenr {
 
+    JSONObject json;
 
+    private static final int REQUEST_POST_NOTIFICATIONS_PERMISSION = 1;
     private static final int PICK_IMAGE_REQUEST_PERMISSION = 34;
     private static final int SETTING_REQUEST_PERMISSION = 35;
     private int PICK_VIDEO_REQUEST = 2;
     private Uri fileUri;
     String photoPath = "";
+    ArrayList<PhotoPathImage> photoPathArray = new ArrayList<>();
+    JSONArray requestJSONImages = new JSONArray();
+    Queue<String> requestFilesQueue;
     String photoPath2 = "";
     String encodedImage = "";
     String finalfileName = "";
@@ -168,6 +187,9 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
     VideoView mVideoView;
 
     long totalSize = 0;
+    
+    boolean isFistImageUpload = false;
+    ProgressDialog imageUploadDailog;
 
 
     @Override
@@ -203,7 +225,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
         selectedUserName = currentUser.fName + " " + currentUser.mName + " " + currentUser.lName;
         selectedSite = sessionManager.getSelectedSite();
 
-        /*if (currentUser.userType.equalsIgnoreCase(AppUtils.UserType.TYPE_MANAGEMENT)) {
+        if (currentUser.userType.equalsIgnoreCase(AppUtils.UserType.TYPE_MANAGEMENT)) {
             filterLL.setVisibility(View.VISIBLE);
             siteSpinner.setText(selectedSite.name);
             userSpinner.setText(currentUser.fName + " " + currentUser.mName + " " + currentUser.lName);
@@ -211,7 +233,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
             //    loadUser();
         } else {
             filterLL.setVisibility(View.GONE);
-        }*/
+        }
         currentDate = DateUtils.getCurrentDate("dd-MM-yyyy");
         L.printError("Current Formatted Date : " + currentDate);
         init(rootView);
@@ -257,37 +279,90 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
             public void onItemClick(int position, View v) {
                 ImageData data = imageDataArrayList.get(position);
 
-                if(data.file.contains(".jpg") || data.file.contains(".png") ||
-                        data.file.contains(".jpeg"))
-                {
-                    if (data.file != null || "".equals(data.file)) {
-                        String path = "";
+                try {
+                    if(data.file.contains(".jpg") || data.file.contains(".png") ||
+                            data.file.contains(".jpeg"))
+                    {
+                        if (data.file != null || "".equals(data.file)) {
+                            String path = "";
+                            if(dirPath.size() > 0)
+                            {
+                                for (int i = 0; i < dirPath.size(); i++) {
+                                    path = path + dirPath.get(i) + "/";
+                                }
+                            }
+                            ArrayList<Image> images = new ArrayList<>();
+                            Image imma = new Image();
+                            imma.setUrl(My_Document_URL + selectedUserId + "/" +
+                                    path + data.file);
+                            images.add(imma);
+                            Intent intent = new Intent(getActivity(), FullImageViewActivity.class);
+                            intent.putExtra("images", images);
+                            startActivity(intent);
+                        } else {
+                            AppUtils.showToast(getActivity(), "Image not Found");
+                        }
+                    }else if(data.file.contains(".pdf"))
+                    {
+                        openPDF(data.file);
+                    }else if(data.file.contains(".mp4"))
+                    {
+                        String pathname = "";
                         if(dirPath.size() > 0)
                         {
                             for (int i = 0; i < dirPath.size(); i++) {
-                                path = path + dirPath.get(i) + "/";
+                                pathname = pathname + dirPath.get(i) + "/";
                             }
                         }
-                        ArrayList<Image> images = new ArrayList<>();
-                        Image imma = new Image();
-                        imma.setUrl(My_Document_URL + currentUser.userID + "/" +
-                                path + data.file);
-                        images.add(imma);
-                        Intent intent = new Intent(getActivity(), FullImageViewActivity.class);
-                        intent.putExtra("images", images);
-                        startActivity(intent);
-                    } else {
-                        AppUtils.showToast(getActivity(), "Image not Found");
-                    }
-                }else if(data.file.contains(".pdf"))
-                {
-                    openPDF(data.file);
-                }else
-                {
-                    dirPath.add(data.file);
-                    back.setVisibility(View.VISIBLE);
-                    getGalleryFolders();
+                        String videoUrl = My_Document_URL + selectedUserId + "/"
+                                +  pathname  + data.file;
 
+                        /*Intent intent = new Intent(getActivity(), VVVideoPlayer.class);
+                        intent.putExtra("url", videoUrl);
+                        startActivity(intent);*/
+                        /*MKPlayer mkplayer = new MKPlayer(getActivity());
+                        mkplayer.play(videoUrl);*/
+                        openMp4Files(data.file);
+                    }else if(data.file.contains(".mkv"))
+                    {
+                        String pathname = "";
+                        if(dirPath.size() > 0)
+                        {
+                            for (int i = 0; i < dirPath.size(); i++) {
+                                pathname = pathname + dirPath.get(i) + "/";
+                            }
+                        }
+                        String videoUrl = My_Document_URL + selectedUserId + "/"
+                                +  pathname  + data.file;
+                        openMKVFiles(videoUrl);
+                       /* Intent intent = new Intent(getActivity(), VVVideoPlayer.class);
+                        intent.putExtra("url", videoUrl);
+                        startActivity(intent);*/
+                    }else if(data.file.contains(".mov"))
+                    {
+                        String pathname = "";
+                        if(dirPath.size() > 0)
+                        {
+                            for (int i = 0; i < dirPath.size(); i++) {
+                                pathname = pathname + dirPath.get(i) + "/";
+                            }
+                        }
+                        String videoUrl = My_Document_URL + selectedUserId + "/"
+                                +  pathname  + data.file;
+                        openMOVFiles(videoUrl);
+                        /*Intent intent = new Intent(getActivity(), VVVideoPlayer.class);
+                        intent.putExtra("url", videoUrl);
+                        startActivity(intent);*/
+                    }else
+                    {
+                        dirPath.add(data.file);
+                        back.setVisibility(View.VISIBLE);
+                        getGalleryFolders();
+                    }
+
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
                 }
                /* Intent intent = new Intent(context, ImageListActivity.class);
                 intent.putExtra("name", data.file);
@@ -321,6 +396,64 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
         });
     }
 
+    public  void openMp4Files(String url){
+        try {
+                String pathname = "";
+                if(dirPath.size() > 0)
+                {
+                    for (int i = 0; i < dirPath.size(); i++) {
+                        pathname = pathname + dirPath.get(i) + "/";
+                    }
+                }
+            String videoUrl = My_Document_URL + selectedUserId + "/"
+                    +  pathname  + url;
+            Intent playVideo = new Intent(Intent.ACTION_VIEW);
+            playVideo.setDataAndType(Uri.parse(videoUrl), "video/mp4");
+            startActivity(playVideo);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public  void openMOVFiles(String url){
+        try {
+            String pathname = "";
+            if(dirPath.size() > 0)
+            {
+                for (int i = 0; i < dirPath.size(); i++) {
+                    pathname = pathname + dirPath.get(i) + "/";
+                }
+            }
+            String videoUrl = My_Document_URL + selectedUserId + "/"
+                    +  pathname  + url;
+            Intent playVideo = new Intent(Intent.ACTION_VIEW);
+            playVideo.setDataAndType(Uri.parse(videoUrl), "video/mov");
+            startActivity(playVideo);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+   public  void openMKVFiles(String url){
+        try {
+            String pathname = "";
+            if(dirPath.size() > 0)
+            {
+                for (int i = 0; i < dirPath.size(); i++) {
+                    pathname = pathname + dirPath.get(i) + "/";
+                }
+            }
+            String videoUrl = My_Document_URL + selectedUserId + "/"
+                    +  pathname  + url;
+            Intent playVideo = new Intent(Intent.ACTION_VIEW);
+            playVideo.setDataAndType(Uri.parse(videoUrl), "video/*");
+            startActivity(playVideo);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public void openPDF(String url)
     {
         Uri path = null;
@@ -333,8 +466,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
                     pathname = pathname + dirPath.get(i) + "/";
                 }
             }
-
-            path = Uri.parse(My_Document_URL + currentUser.userID + "/"
+            path = Uri.parse(My_Document_URL + selectedUserId + "/"
                     +  pathname  + url);
         } catch (Exception e) {
             e.printStackTrace();
@@ -354,7 +486,6 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
 
     @OnClick(R.id.uploadPhotos)
     public void uploadPhotos() {
-
         checkRuntimePermissions();
     }
 
@@ -443,6 +574,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
                                                          pathname = pathname + dirPath.get(i) + "/";
                                                      }
                                                  }
+                                                 photoAdapter.updateUserId(selectedUserId);
                                                  photoAdapter.updateList(imageDataArrayList, pathname);
                                              } else {
                                                  String pathname = "";
@@ -452,6 +584,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
                                                          pathname = pathname + dirPath.get(i) + "/";
                                                      }
                                                  }
+                                                 photoAdapter.updateUserId(selectedUserId);
                                                  photoAdapter.updateList(imageDataArrayList, pathname);
                                                  noRecordMessageTV.setVisibility(View.VISIBLE);
                                              }
@@ -464,6 +597,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
                                                      pathname = pathname + dirPath.get(i) + "/";
                                                  }
                                              }
+                                             photoAdapter.updateUserId(selectedUserId);
                                              photoAdapter.updateList(imageDataArrayList,pathname);
                                              noRecordMessageTV.setVisibility(View.VISIBLE);
                                          }
@@ -476,6 +610,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
                                                  pathname = pathname + dirPath.get(i) + "/";
                                              }
                                          }
+                                         photoAdapter.updateUserId(selectedUserId);
                                          photoAdapter.updateList(imageDataArrayList, pathname);
                                          noRecordMessageTV.setVisibility(View.VISIBLE);
                                      }
@@ -492,6 +627,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
                                              pathname = pathname + dirPath.get(i) + "/";
                                          }
                                      }
+                                     photoAdapter.updateUserId(selectedUserId);
                                      photoAdapter.updateList(imageDataArrayList, pathname);
                                      noRecordMessageTV.setVisibility(View.VISIBLE);
                                      progressDialog.dismiss();
@@ -502,13 +638,17 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
 
 
     private void checkRuntimePermissions() {
+
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
         ) {
             showOption();
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
                     ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA)
+                    || ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.POST_NOTIFICATIONS)
                     || ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_MEDIA_VIDEO)) {
                 String requiresPermission = "", cam = "", storage = "";
 
@@ -533,6 +673,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.READ_MEDIA_IMAGES,
                                 Manifest.permission.CAMERA,
+                                Manifest.permission.POST_NOTIFICATIONS,
                                 Manifest.permission.READ_MEDIA_VIDEO},
                         PICK_IMAGE_REQUEST_PERMISSION);
             }
@@ -558,13 +699,18 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
 
         dialog.setNeutralButton("Gallery",
                 (dialog12, which) -> {
-                    Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("image/*"); //allows any image file type. Change * to specific extension to limit it
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    startGalleryIntent.launch(Intent.createChooser(intent, "Select Picture"));
+
+                    /* Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     i.setType("image/*");
-                    startGalleryIntent.launch(i);
+                    startGalleryIntent.launch(i);*/
                     dialog12.dismiss();
                 });
 
-        dialog.setNegativeButton("Upload Video", new DialogInterface.OnClickListener() {
+        dialog.setNegativeButton("Video", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 showVideoFileChooser();
@@ -660,6 +806,9 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
         currentLatLong = latLng;
     }
 
+    boolean isCancel = false;
+
+
     @Override
     public void onPointInPolygon(boolean isPointIn) {
         currentPointPolygonStatus = isPointIn;
@@ -673,7 +822,6 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
     private void createFolder(String siteid){
         JSONObject jsonObject = new JSONObject();
         try {
-
             jsonObject.put("folderPath", siteid);
             jsonObject.put("createdByUserID", currentUser.userID);
             L.printError("Create folder Request : " + jsonObject.toString());
@@ -704,30 +852,59 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    if (result != null && result.getData() != null) {
+
+                        //Multiple Selection
+                        if(result.getResultCode() == Activity.RESULT_OK) {
+                            if(result.getData().getClipData() != null) {
+                                int count = result.getData().getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
+                                photoPathArray = new ArrayList<>();
+                                for(int i = 0; i < count; i++) {
+                                    Uri imageUri = result.getData().getClipData().getItemAt(i).getUri();
+                                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                                    Cursor cursor = getActivity().getContentResolver().query(imageUri,
+                                            filePathColumn, null, null, null);
+                                    cursor.moveToFirst();
+                                    try {
+                                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                        String picturePath = cursor.getString(columnIndex);
+                                        cursor.close();
+                                        PhotoPathImage photoPathImage = new PhotoPathImage();
+                                        photoPathImage.setPath(picturePath);
+                                        photoPathArray.add(photoPathImage);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    L.printError("Gallery Pic" + imageUri);
+                                }
+                                new CompressMultipleImage().execute();
+
+                            }
+                        }/* else if(result.getData().getData() != null) {
+                            String imagePath = result.getData().getData().getPath();
+                            L.printError("Gallery Path" + imagePath);
+                            //do something with the image (save it to some directory or whatever you need to do with it here)
+                        }*/
+
+
+                    //Single Selection
+                    /* if (result != null && result.getData() != null) {
                         Uri selectedImage = result.getData().getData();
                         String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
                         Cursor cursor = getActivity().getContentResolver().query(selectedImage,
                                 filePathColumn, null, null, null);
                         cursor.moveToFirst();
-
                         try {
                             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                             String picturePath = cursor.getString(columnIndex);
                             cursor.close();
-
                             photoPath = picturePath;
-
                             new CompressImage().execute(picturePath);
-                            /*Uri uri = Uri.fromFile(new File(picturePath));
-                            L.printError("Image Uri Gallery : " + uri.getPath());
-*/
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
 
-                    }
+                    }*/
                 }
 
             });
@@ -831,123 +1008,82 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
         }
     }
 
-    private String createTextToWriteOnImage() {
-        String str = "";
-        DateFormat df = new SimpleDateFormat("MMM d, yyyy hh:mm:ss aa");
-        String date = df.format(new Date());
-        str += date + "\n";
+    private class CompressMultipleImage extends AsyncTask<String, Void, ArrayList<PhotoPathImage>> {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Loading...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
 
-        if (currentLatLong != null) {
-            String lal = convertTODegree(currentLatLong.latitude, currentLatLong.longitude);
-            str += lal.trim() + "\n";
-            /*----------to get City-Name from coordinates ------------- */
-            String country = "";
-            String locality = "";
-            String postalCode = "";
-            String state = "";
-            Geocoder gcd = new Geocoder(getActivity().getBaseContext(), Locale.getDefault());
-            List<Address> addresses;
+        @Override
+        protected ArrayList<PhotoPathImage> doInBackground(String... path) {
+            ArrayList<PhotoPathImage> value = new ArrayList<>();
             try {
-                addresses = gcd.getFromLocation(currentLatLong.latitude, currentLatLong.longitude, 1);
-                if (addresses.size() > 0) {
-                   /* L.printError(addresses.get(0).getLocality());
-                    cityName = addresses.get(0).getAddressLine(0);*/
-                    locality = addresses.get(0).getSubLocality();
-                    postalCode = addresses.get(0).getPostalCode();
-                    country = addresses.get(0).getCountryName();
-                    state = addresses.get(0).getAdminArea();
-                    //    L.printError(addresses.get(0).getPremises());
-                    //    L.printError(addresses.get(0).getCountryName());
-                    //    L.printError(addresses.get(0).getAdminArea());
-                    //    L.printError(addresses.get(0).getSubLocality());
-                    //    L.printError(addresses.get(0).getPostalCode());
+                for (int i = 0; i < photoPathArray.size(); i++) {
+                    PhotoPathImage data = photoPathArray.get(i);
+                    String mPath = data.getPath();
+                    Bitmap bmm = BitmapFactory.decodeFile(mPath);
+               /* String text = createTextToWriteOnImage();
+                L.printError(text);
+                Bitmap bm = drawTextToBitmap(getActivity()
+                        , bmm, text);*/
+                    ByteArrayOutputStream bao = new ByteArrayOutputStream();
+                    bmm.compress(Bitmap.CompressFormat.JPEG, 90, bao);
+                    byte[] ba = bao.toByteArray();
+                    String base64 = Base64.encodeToString(ba, Base64.NO_WRAP);
+                    data.setFileBase64Image(base64);
+                    value.add(data);
                 }
-
-                str += locality + " " + postalCode.trim() + "\n";
-                str += state + ", " + country.trim() + "\n";
-
-                str += selectedSite.name.trim() + "\n";
-                if (selectedSite.roadNo != null) {
-                    str += "PKG " + selectedSite.roadNo.trim() + "\n";
-                }
-                if (selectedSite.roadName != null) {
-                    str += selectedSite.roadName.trim() + "\n";
-                }
-
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+            return value;
         }
-        return str;
-    }
 
-    public Bitmap drawTextToBitmap(Context gContext,
-                                   Bitmap bitmap,
-                                   String gText) {
-        Resources resources = gContext.getResources();
-        float scale = resources.getDisplayMetrics().density;
-        android.graphics.Bitmap.Config bitmapConfig =
-                bitmap.getConfig();
-        if (bitmapConfig == null) {
-            bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
-        }
-        bitmap = bitmap.copy(bitmapConfig, true);
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(getResources().getColor(R.color.white));
-//        paint.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/DS-DIGI.TTF"));
-        paint.setTextSize((int) (30 * scale));
-        paint.setShadowLayer(1f, 0f, 1f, getResources().getColor(R.color.dark_gray));
+        @Override
+        protected void onPostExecute(ArrayList<PhotoPathImage> imagePath) {
+            super.onPostExecute(imagePath);
+            progressDialog.dismiss();
+            if (imagePath != null && imagePath.size() > 0)
+            {
+                String pathname = "";
+                if(dirPath.size() > 0)
+                {
+                    for (int i = 0; i < dirPath.size(); i++) {
+                        pathname = pathname + dirPath.get(i) + "/";
+                    }
+                }
+                requestJSONImages = new JSONArray();
+                requestFilesQueue = new LinkedList();
+                for (int i = 0; i < imagePath.size(); i++) {
+                    try {
+                        JSONObject jsonObject = new JSONObject();
+                        File f = new File(imagePath.get(i).getPath());
+                        String fileName = f.getName();
+                        String[] parts = fileName.split("\\.");
 
-        int noOfLines = 0;
-        for (String line : gText.split("\n")) {
-            noOfLines++;
-        }
-      /*   int x = (bitmap.getWidth() - bounds.width()) / 2;
-        int y = (bitmap.getHeight() + bounds.height()) / 2;*/
-        int y = 0;
-        boolean isassigned = false;
-        int lineCount = 0;
-        for (String line : gText.split("\n")) {
-            Rect bounds = new Rect();
-            paint.getTextBounds(gText, 0, line.length(), bounds);
-            int horizontalSpacing = 10;
-            if (lineCount == 0) {
-                horizontalSpacing = 60;
-                lineCount++;
-            } else if (lineCount == 1) {
-                horizontalSpacing = 30;
-                lineCount++;
-            } else if (lineCount == 2) {
-                horizontalSpacing = 50;
-                lineCount++;
-            } else if (lineCount == 3) {
-                horizontalSpacing = 0;
-                lineCount++;
-            } else if (lineCount == 4) {
-                horizontalSpacing = 150;
-                lineCount++;
-            }else if (lineCount == 5) {
-                horizontalSpacing = 140;
-                lineCount++;
-            }else if (lineCount == 6) {
-                horizontalSpacing = 0;
-                lineCount++;
+                        finalfileName = parts[0];
+                        fileExtention = parts[1];
+                        jsonObject.put("fileExt",fileExtention);
+                        jsonObject.put("base64Data",imagePath.get(i).getFileBase64Image());
+                        jsonObject.put("fileName",finalfileName);
+                        jsonObject.put("createdByUserID",currentUser.userID);
+                        jsonObject.put("folderPath", pathname);
+                        requestJSONImages.put(jsonObject);
+                        requestFilesQueue.add(jsonObject.toString());
+                    }catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                isFistImageUpload = true;
+                uploadMultipleImage();
             }
-
-            int verticalSpacing = 50;
-            int x = bitmap.getWidth() - bounds.right - horizontalSpacing;//(bitmap.getWidth() - bounds.width()) / 2;
-            if (!isassigned) {
-                y = (bitmap.getHeight() - bounds.height() * noOfLines) - verticalSpacing;//(bitmap.getHeight() + bounds.height()) / 2;
-                isassigned = true;
-            }
-            canvas.drawText(line, x, y, paint);
-            y += paint.descent() - paint.ascent();
         }
-        //    canvas.drawText(gText, x, y, paint);
-        return bitmap;
     }
-
 
     private String convertTODegree(double latitude, double longitude) {
         StringBuilder builder = new StringBuilder();
@@ -986,12 +1122,9 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
         return builder.toString();
     }
 
-
     private void uploadImage(String image, String name, String extention) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-        String requestDate = sdf.format(new Date());
-
         ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Loading...");
         progressDialog.setCancelable(false);
@@ -1010,7 +1143,6 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
             jsonObject.put("folderPath", pathname);
             jsonObject.put("fileName", name);
             jsonObject.put("fileExt", extention);
-
             jsonObject.put("createdByUserID", currentUser.userID);
             jsonObject.put("base64Data", image);
             L.printError(jsonObject.toString());
@@ -1044,6 +1176,229 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
 
     }
 
+    private void uploadMultipleImage() {
+        if(!requestFilesQueue.isEmpty())
+        {
+            String value;
+            try {
+
+                if(isFistImageUpload)
+            {
+                imageUploadDailog = new ProgressDialog(context);
+             //   imageUploadDailog.setMax(100);
+                imageUploadDailog.setTitle("Uploading files " + ((requestJSONImages.length() - requestFilesQueue.size()) + 1)+"/"+ requestJSONImages.length());
+                imageUploadDailog.setMessage("Uploading...");
+                imageUploadDailog.setCancelable(false);
+          //      imageUploadDailog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                imageUploadDailog.setButton(DialogInterface.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        isCancel = true;
+                        AndroidNetworking.forceCancelAll();
+                        //    Toast.makeText(context, "Upload Cancel", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            //    imageUploadDailog.setProgress(0);
+                imageUploadDailog.show();
+                isFistImageUpload = false;
+                value  = requestFilesQueue.poll();
+
+            }else
+            {
+
+            }
+
+                value  = requestFilesQueue.poll();
+                JSONObject jsonObject = new JSONObject(value);
+                imageUploadDailog.setTitle("Uploading files " + ((requestJSONImages.length() - requestFilesQueue.size()) + 1)+"/"+ requestJSONImages.length());
+                imageUploadDailog.setMessage("Uploading..." + jsonObject.getString("fileName") + "." +
+                        jsonObject.getString("fileExt"));
+
+        /*        uploadImage(jsonObject.getString("base64Data"), jsonObject.getString("fileName"),
+                        jsonObject.getString("fileExt"));
+        */
+                AndroidNetworking.post(ServerConfig.Image_Upload_Document_URL)
+                        .addJSONObjectBody(jsonObject) // posting json
+                        .setTag(jsonObject.getString("fileName"))
+                        .setPriority(Priority.HIGH)
+                        .build()
+                        .setUploadProgressListener(new UploadProgressListener() {
+                            @Override
+                            public void onProgress(long bytesUploaded, long totalBytes) {
+                                L.printError("...................." + bytesUploaded + "/" + totalBytes);
+                            //    int percent = (int)(100.0*(double)bytesUploaded/totalBytes + 0.5);
+                            //imageUploadDailog.setProgress(percent);
+              /*                  imageUploadDailog.setMessage("Uploading " + AppUtils.bytesIntoHumanReadable(bytesUploaded)
+                                        + "/" + AppUtils.bytesIntoHumanReadable(totalBytes) + " " + finalfileName+ "." + fileExtention);
+*/
+                            }
+                        })
+                        .getAsString(new StringRequestListener() {
+                            @Override
+                            public void onResponse(String response) {
+                                L.printInfo(response.toString());
+                                if(requestFilesQueue.isEmpty())
+                                {
+                                    isFistImageUpload = false;
+                                    imageUploadDailog.dismiss();
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                                    builder1.setTitle("Success");
+                                    builder1.setMessage("File Uploaded Successfully");
+                                    builder1.setCancelable(true);
+                                    builder1.setPositiveButton(
+                                            "Close",
+                                            (dialog, id) -> {
+                                                getGalleryFolders();
+                                                dialog.cancel();
+                                            });
+                                    AlertDialog alert11 = builder1.create();
+                                    alert11.show();
+                                }else
+                                {
+                                    uploadMultipleImage();
+                                }
+
+                            }
+
+                            @Override
+                            public void onError(ANError anError) {
+                                if(requestFilesQueue.isEmpty())
+                                {
+                                    isFistImageUpload = false;
+                                    imageUploadDailog.dismiss();
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                                    builder1.setTitle("Error");
+                                    builder1.setMessage(anError.getErrorBody());
+                                    builder1.setCancelable(true);
+                                    builder1.setPositiveButton(
+                                            "Close",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+
+                                    AlertDialog alert11 = builder1.create();
+                                    alert11.show();
+                                }else
+                                {
+                                    uploadMultipleImage();
+                                }
+
+                            }
+                        });
+
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }else {
+
+        }
+
+/*
+        final ProgressDialog mDialog;
+        mDialog = new ProgressDialog(context);
+        mDialog.setMax(100);
+        mDialog.setCancelable(false);
+        mDialog.setMessage("Uploading files");
+        mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                isCancel = true;
+                AndroidNetworking.forceCancelAll();
+                //    Toast.makeText(context, "Upload Cancel", Toast.LENGTH_SHORT).show();
+            }
+        });
+        mDialog.setProgress(0);
+
+
+        mDialog.show();
+        L.printError("Request Json : " + requestJSONImages.toString());
+
+        AndroidNetworking.post(ServerConfig.Image_Upload_Multiple_Document_URL)
+                .addJSONArrayBody(requestJSONImages) // posting json
+                .setTag("ImageUpload")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        L.printError("...................." + bytesUploaded + "/" + totalBytes);
+                        int percent = (int)(100.0*(double)bytesUploaded/totalBytes + 0.5);
+                    //    mDialog.setProgress(percent);
+                                            mDialog.setMessage("Uploading " + AppUtils.bytesIntoHumanReadable(bytesUploaded)
+                                                    + "/" + AppUtils.bytesIntoHumanReadable(totalBytes) + " " + finalfileName+ "." + fileExtention);
+                                       //    L.printError("Progress : " + bytesUploaded);
+                    }
+                })
+                .getAsString(new StringRequestListener() {
+                    @Override
+                    public void onResponse(String response) {
+                     //   mDialog.dismiss();
+                        mDialog.dismiss();
+                        AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                        builder1.setTitle("Success");
+                        builder1.setMessage("File Uploaded Successfully");
+                        builder1.setCancelable(true);
+                        builder1.setPositiveButton(
+                                "Close",
+                                (dialog, id) -> {
+                                    getGalleryFolders();
+                                    dialog.cancel();
+                                });
+                        AlertDialog alert11 = builder1.create();
+                        alert11.show();
+                        //    AppUtils.showToast(UploadPhotosActivity.this, "Image Successfully Uploaded ");
+
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if(isCancel)
+                        {
+                            isCancel = false;
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                            builder1.setTitle("Error");
+                            builder1.setMessage("Uploading has been canceled");
+                            builder1.setCancelable(true);
+                            builder1.setPositiveButton(
+                                    "Close",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                            AlertDialog alert11 = builder1.create();
+                            alert11.show();
+
+                        }else
+                        {
+                            mDialog.dismiss();
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                            builder1.setTitle("Error");
+                            builder1.setMessage(anError.getErrorBody());
+                            builder1.setCancelable(true);
+                            builder1.setPositiveButton(
+                                    "Close",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                            AlertDialog alert11 = builder1.create();
+                            alert11.show();
+                        }
+
+                    }
+                });
+*/
+
+    }
+
 
     //method to show file chooser
     private void showVideoFileChooser() {
@@ -1052,13 +1407,13 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
         //   intent.setAction(Intent.ACTION_GET_CONTENT);
         //  startActivityForResult(Intent.createChooser(intent, "Select Pdf"), PICK_DOC_REQUEST);
 
-        String[] mimeTypes = {"video/*"};
+        String[] mimeTypes = {"video/mp4"};
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            intent.setType(mimeTypes.length == 1 ? mimeTypes[0] : "*/*");
+            intent.setType(mimeTypes.length == 1 ? mimeTypes[0] : "video/mp4");
             if (mimeTypes.length > 0) {
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             }
@@ -1072,10 +1427,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
             intent.setType(mimeTypesStr.substring(0, mimeTypesStr.length() - 1));
         }
         startVideoPickerIntent.launch(Intent.createChooser(intent, "Pick Video to Upload"));
-
-
     }
-
 
 
     ActivityResultLauncher<Intent> startVideoPickerIntent = registerForActivityResult(
@@ -1095,7 +1447,6 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
                             return cursor.getString(column_index);
                         }
                         */
-
 
                         String[] filePathColumn = {MediaStore.Video.Media.DATA};
                         Cursor cursor = getActivity().getContentResolver().query(VideofilePath,
@@ -1122,16 +1473,123 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
                                     pathname = pathname + dirPath.get(i) + "/";
                                 }
                             }
+
+                            json  = new JSONObject();
+                            json.put("FileData" , photoPath);
+                            json.put("FileName" , finalfileName);
+                            json.put("FileExt" , fileExtention);
+                            json.put("CreatedByUserID" , currentUser.userID);
+                            json.put("FolderPath" , pathname);
+
+                        //    checkNotificationsPermission();
                             /*mVideoView.setMediaController(new MediaController(getActivity()));
                             mVideoView.setVideoPath(photoPath);
                             mVideoView.requestFocus();
                             mVideoView.start();*/
                        //     new FileUploadTask().execute(photoPath.trim(), pathname,  finalfileName.trim(), fileExtention.trim(),  currentUser.userID.trim());
-                            new UploadVideoFile().execute(pathname,  finalfileName.trim(), fileExtention.trim(),  currentUser.userID.trim(), photoPath.trim());
+                       //     new UploadVideoFile().execute(pathname,  finalfileName.trim(), fileExtention.trim(),  currentUser.userID.trim(), photoPath.trim());
                     //        new CompressImage().execute(picturePath);
-                      } catch (Exception e) {
+
+                            final ProgressDialog mDialog;
+
+                            mDialog = new ProgressDialog(context);
+                            mDialog.setMax(100);
+                            mDialog.setCancelable(false);
+                            mDialog.setMessage("Uploading " + finalfileName);
+                            mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                            mDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    isCancel = true;
+                                    AndroidNetworking.forceCancelAll();
+                                //    Toast.makeText(context, "Upload Cancel", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            mDialog.setProgress(0);
+
+                            mDialog.show();
+
+                            AndroidNetworking.upload(ServerConfig.PDF_Upload_Video_URL)
+                                    .addMultipartFile("FileData",new File(photoPath))
+                                    .addMultipartParameter("FolderPath",pathname)
+                                    .addMultipartParameter("FileName",finalfileName)
+                                    .addMultipartParameter("FileExt", fileExtention)
+                                    .addMultipartParameter("CreatedByUserID", currentUser.userID)
+                                    .setTag("upload video")
+                                    .setPriority(Priority.HIGH)
+                                    .build()
+                                    .setUploadProgressListener(new UploadProgressListener() {
+                                        @Override
+                                        public void onProgress(long bytesUploaded, long totalBytes) {
+                                            int percent = (int)(100.0*(double)bytesUploaded/totalBytes + 0.5);
+                                            mDialog.setProgress(percent);
+                                            mDialog.setMessage("Uploading " + AppUtils.bytesIntoHumanReadable(bytesUploaded)
+                                                    + "/" + AppUtils.bytesIntoHumanReadable(totalBytes) + " " + finalfileName+ "." + fileExtention);
+                                        //  L.printError("Progress : " + bytesUploaded);
+                                        }
+                                    })
+                                    .getAsString(new StringRequestListener() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            mDialog.dismiss();
+                                            AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                                            builder1.setTitle("Success");
+                                            builder1.setMessage("File Uploaded Successfully");
+                                            builder1.setCancelable(true);
+                                            builder1.setPositiveButton(
+                                                    "Close",
+                                                    (dialog, id) -> {
+                                                        getGalleryFolders();
+                                                        dialog.cancel();
+                                                    });
+                                            AlertDialog alert11 = builder1.create();
+                                            alert11.show();
+                                        //    Toast.makeText(context, "File Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                                            L.printError("Response : " + response);
+                                        }
+
+                                        @Override
+                                        public void onError(ANError anError) {
+                                            if(isCancel)
+                                            {
+                                                AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                                                builder1.setTitle("Error");
+                                                builder1.setMessage("Uploading has been canceled");
+                                                builder1.setCancelable(true);
+                                                builder1.setPositiveButton(
+                                                        "Close",
+                                                        new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int id) {
+                                                                dialog.cancel();
+                                                            }
+                                                        });
+
+                                                AlertDialog alert11 = builder1.create();
+                                                alert11.show();
+
+                                            }else
+                                            {
+                                                mDialog.dismiss();
+                                                AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                                                builder1.setTitle("Error");
+                                                builder1.setMessage(anError.getErrorBody());
+                                                builder1.setCancelable(true);
+                                                builder1.setPositiveButton(
+                                                        "Close",
+                                                        new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int id) {
+                                                                dialog.cancel();
+                                                            }
+                                                        });
+
+                                                AlertDialog alert11 = builder1.create();
+                                                alert11.show();
+                                            }
+                                        }
+                                    });
+                        } catch (Exception e) {
                             e.printStackTrace();
-                      }
+                        }
 
                     }
                 }
@@ -1139,94 +1597,7 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
             });
 
 
-    class UploadVideoFile extends AsyncTask<String, String, String> {
-        ProgressDialog pd = new ProgressDialog(getActivity());
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pd.setMessage("Please wait...");
-            pd.setCanceledOnTouchOutside(false);
-            pd.show();
-
-        }
-
-
-        @Override
-        protected String doInBackground(String... params) {
-            String resp = "";
-            try {
-                L.printError(params[4]);
-                File file = new File(params[4]);
-                if (file.exists() || file.isFile())
-                {
-                    System.out.println(getFileSizeBytes(file));
-                    System.out.println(getFileSizeKiloBytes(file));
-                    System.out.println(getFileSizeMegaBytes(file));
-                }
-
-         /*       byte[] fileData = new byte[(int)im.length()];
-                FileInputStream in = new FileInputStream(im);
-                in.read(fileData);
-                in.close();*/
-                L.printError(ServerConfig.PDF_Upload_Video_URL);
-                String charset = "UTF-8";
-             /*   MultipartUtility multipart = new MultipartUtility("http://192.168.224.206:8080/api/v1.0/blogger/uploadOtherPostImage", charset);
-                //  multipart.addFormField("user_id", userid);
-                multipart.addFormFieldJSON("file_type_id", "4");
-                multipart.addFormFieldJSON("post_id","2");
-                multipart.addFilePart("file", file);
-
-*/
-                MultipartUtility multipart = new MultipartUtility(ServerConfig.PDF_Upload_Video_URL, charset);
-                //  multipart.addFormField("user_id", userid);
-                multipart.addFormFieldJSON("FolderPath", params[0]);
-                multipart.addFormFieldJSON("FileName", params[1]);
-                multipart.addFormFieldJSON("FileExt", params[2]);
-                multipart.addFormFieldJSON("CreatedByUserID", params[3]);
-                multipart.addFilePartForVideo("FileData", file);
-
-                L.printError(multipart.printRequest());
-
-                /*final String urlStr = ServerConfig.PDF_Upload_Video_URL;
-                URL url = new URL(urlStr);
-                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-                connection.setDoInput(true);
-                connection.setDoOutput(true);
-                connection.setRequestMethod("POST");
-
-                MultipartHelper multipart = new MultipartHelper(connection);
-                multipart.addStringPart("FolderPath", params[0]);
-                multipart.addStringPart("FileName", params[1]);
-                multipart.addStringPart("FileExt", params[2]);
-                multipart.addStringPart("CreatedByUserID", params[3]);
-                multipart.addFilePart(file, URLConnection.guessContentTypeFromName(params[1]),  "FileData");
-
-                multipart.makeRequest();*/
-
-
-                List<String> response = multipart.finish();
-            //    List<String> response = new ArrayList<>();
-
-                for (String line : response) {
-                    resp = resp + line;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return resp;
-        }
-
-        @Override
-        protected void onPostExecute(String response) {
-            super.onPostExecute(response);
-            pd.dismiss();
-            L.printInfo("Upload Video Response : " + response);
-            getGalleryFolders();
-
-        }
-
-    }
 
 
     private static String getFileSizeMegaBytes(File file) {
@@ -1241,128 +1612,220 @@ public class UploadGalleryFragment extends Fragment implements HomeActivity.Home
         return file.length() + " bytes";
     }
 
-    public class FileUploadTask extends AsyncTask<String, Void, String> {
-        ProgressDialog pd = new ProgressDialog(getActivity());
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pd.setMessage("Please wait...");
-            pd.setCanceledOnTouchOutside(false);
-            pd.show();
+
+    private void checkNotificationsPermission() {
+        if (isNotificationsPermissionGranted()) {
+           startVideoUploadingService();
+        } else {
+            requestNotificationsPermission();
         }
+    }
 
-        @Override
-        protected String doInBackground(String... params) {
-            String sourceFileUri = params[0];
-            String folderName = params[1]; // Extra parameter value
-            String fName = params[2]; // Extra parameter value
-            String fExt = params[3]; // Extra parameter value
-            String user = params[4]; // Extra parameter value
+    private boolean isNotificationsPermissionGranted() {
+        return ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED;
+    }
 
-            String upLoadServerUri = ServerConfig.PDF_Upload_Video_URL; // Replace with your server URL
+    private void requestNotificationsPermission() {
+        if (ContextCompat.checkSelfPermission(
+                context, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED) {
+            startVideoUploadingService();
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
+    }
 
-            String fileName = sourceFileUri;
+   public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 
-            L.printError(sourceFileUri + " : " +  folderName + " : " + fName + " : " + fExt+ " : " + user + " : " +  URLConnection.guessContentTypeFromName(fileName));
-
-            HttpURLConnection conn;
-            DataOutputStream dos;
-            String lineEnd = "\r\n";
-            String twoHyphens = "--";
-            String boundary = "*****";
-            int bytesRead, bytesAvailable, bufferSize;
-            byte[] buffer;
-            int maxBufferSize = 1 * 1024 * 1024;
-
-            File sourceFile = new File(sourceFileUri);
-
-            if (!sourceFile.isFile()) {
-                Log.e("uploadFile", "Source File not exist :" + fileName);
-                return "Source File not exist :" + fileName;
-            } else {
-                try {
-                    FileInputStream fileInputStream = new FileInputStream(sourceFile);
-                    URL url = new URL(upLoadServerUri);
-
-                    // Open a HTTP connection to the URL
-                    conn = (HttpURLConnection) url.openConnection();
-                    conn.setDoInput(true); // Allow Inputs
-                    conn.setDoOutput(true); // Allow Outputs
-                    conn.setUseCaches(false); // Don't use a Cached Copy
-                    conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Connection", "Keep-Alive");
-                    conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-                    conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-
-                    // Add extra parameter to the request
-                    conn.setRequestProperty("FolderPath", folderName);
-                    conn.setRequestProperty("FileName", fName);
-                    conn.setRequestProperty("FileExt", fExt);
-                    conn.setRequestProperty("CreatedByUserID", user);
-
-                    conn.setRequestProperty("FileData", fileName);
-
-                    dos = new DataOutputStream(conn.getOutputStream());
-
-                    dos.writeBytes(twoHyphens + boundary + lineEnd);
-                    dos.writeBytes("Content-Disposition: form-data; name=\"FileData\";filename=\""
-                            + fileName + "\"" + lineEnd);
-
-                    dos.writeBytes(lineEnd);
-
-                    // create a buffer of maximum size
-                    bytesAvailable = fileInputStream.available();
-                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                    buffer = new byte[bufferSize];
-
-                    // read file and write it into form...
-                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-                    while (bytesRead > 0) {
-                        dos.write(buffer, 0, bufferSize);
-                        bytesAvailable = fileInputStream.available();
-                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+        if (manager != null) {
+            for (ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
+                if (processInfo.processName.equals(context.getPackageName())) {
+                    for (String service : processInfo.pkgList) {
+                        if (service.equals(serviceClass.getName())) {
+                            return true;
+                        }
                     }
-
-                    // send multipart form data necesssary after file data...
-                    dos.writeBytes(lineEnd);
-                    dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-                    // Responses from the server (code and message)
-                    int serverResponseCode = conn.getResponseCode();
-                    String serverResponseMessage = conn.getResponseMessage();
-
-                    Log.i("uploadFile", "HTTP Response is : " + serverResponseMessage + ": " + serverResponseCode);
-
-                    // Close the streams
-                    fileInputStream.close();
-                    dos.flush();
-                    dos.close();
-
-                    if (serverResponseCode == 200) {
-                        return "File Upload Completed.";
-                    } else {
-                        return "File Upload Failed. HTTP Response Code: " + serverResponseCode;
-                    }
-
-                } catch (MalformedURLException ex) {
-                    ex.printStackTrace();
-                    return "MalformedURLException";
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return "Got Exception : see logcat ";
                 }
             }
         }
 
-        @Override
-        protected void onPostExecute(String result) {
-            pd.dismiss();
-            L.printInfo("Upload Video Response : " + result);
-            getGalleryFolders();
+        return false;
+    }
+
+
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    startVideoUploadingService();
+                }
+            });
+
+
+    public void startVideoUploadingService(){
+        if (!isServiceRunning(getActivity(),UploadVideoService.class)){
+            Intent i = new Intent(getActivity(), UploadVideoService.class);
+            i.putExtra("data", json.toString());
+            i.setAction("start");
+            getActivity().startService(i);
+        }else
+        {
+            Toast.makeText(context, "File Uploading Already running, Please wait for complete.", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void loadSite() {
+        sitesArrayList = new ArrayList<>();
+        if (currentUser.sites != null) {
+            for (Site si : currentUser.sites) {
+                if (si.id != 0) {
+                    sitesArrayList.add(si);
+                }
+            }
+        }
+
+        if (sitesArrayList != null && sitesArrayList.size() > 0) {
+            try {
+                Site dataModel = sitesArrayList.get(0);
+                //    sessionManager.saveSelectedSite(dataModel);
+                siteSpinner.setText(dataModel.name);
+                selectedSite = dataModel;
+                //    loadUser();
+                getUsers(dataModel.id);
+                //    getGalleryFolders();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        siteSpinner.setOnClickListener(v -> {
+            if (sitesArrayList.size() > 1) {
+                showSiteSelectionDialog();
+            }
+        });
+        //    spinner1.setText("Site One");
+    }
+
+    private void getUsers(int siteid){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("siteID", siteid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        AndroidNetworking.post(ServerConfig.Load_Users_By_Site_URL)
+                .addJSONObjectBody(jsonObject) // posting json
+                .setTag("Users")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                                    @Override
+                                    public void onResponse(JSONArray response) {
+                                        L.printInfo(response.toString());
+                                        ObjectMapper om = new ObjectMapper();
+                                        try {
+                                            usersArrayList = new ArrayList<>();
+                                            ArrayList<UserItem>   sitesArrayList = om.readValue(response.toString(), new TypeReference<List<UserItem>>(){});
+                                            usersArrayList.addAll(sitesArrayList);
+                                            loadUser();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(ANError anError) {
+                                        L.printError(anError.toString());
+                                    }
+                                }
+                );
+
+    }
+
+    private void loadUser() {
+        if (usersArrayList != null && usersArrayList.size() > 0) {
+            int index = 0;
+            for (int i = 0; i < usersArrayList.size(); i++) {
+                if (usersArrayList.get(i).id == Integer.parseInt(currentUser.userID)) {
+                    index = i;
+                }
+            }
+
+            UserItem dataModel = usersArrayList.get(index);
+            userSpinner.setText(dataModel.name);
+            selectedUserId = String.valueOf(dataModel.id);
+            selectedUserName = dataModel.name;
+            getGalleryFolders();
+
+        }
+
+        userSpinner.setOnClickListener(v -> {
+            if (usersArrayList.size() > 1) {
+                showUserSelectionDialog();
+            }
+        });
+        //    spinner1.setText("Site One");
+    }
+
+    public void showUserSelectionDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(context).create();
+        final View customLayout = getLayoutInflater().inflate(R.layout.user_list_dailog, null);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.setView(customLayout);
+
+        ListView listView = customLayout.findViewById(R.id.list);
+        UserSpinnerAdapter adapter = new UserSpinnerAdapter(context, usersArrayList);
+
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                UserItem dataModel = usersArrayList.get(position);
+                userSpinner.setText(dataModel.name);
+                selectedUserId = String.valueOf(dataModel.id);
+                selectedUserName = dataModel.name;
+                if(dirPath != null)
+                {
+                    dirPath.clear();
+                    back.setVisibility(View.GONE);
+                }
+                getGalleryFolders();
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    public void showSiteSelectionDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(context).create();
+        final View customLayout = getLayoutInflater().inflate(R.layout.site_selection_dailog, null);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.setView(customLayout);
+
+        ListView listView = customLayout.findViewById(R.id.list);
+        SiteSpinnerAdapter adapter = new SiteSpinnerAdapter(context, sitesArrayList);
+
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    Site dataModel = sitesArrayList.get(position);
+                    //    sessionManager.saveSelectedSite(dataModel);
+                    siteSpinner.setText(dataModel.name);
+                    selectedSite = dataModel;
+                    getUsers(dataModel.id);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
 
 }

@@ -30,6 +30,7 @@ public class ServerConfig {
     public static final String Categories_URL =  BASE_URL + "Master/CategoryList";;
     public static final String Image_Upload_URL =  BASE_URL + "Transaction/UploadImageDetails";;
     public static final String Image_Upload_Document_URL =  BASE_URL + "Transaction/UploadFile";;
+    public static final String Image_Upload_Multiple_Document_URL =  BASE_URL + "Transaction/UploadFiles";;
     public static final String PDF_Upload_URL =  BASE_URL + "Transaction/UploadPDFDetails";;
     public static final String PDF_Upload_Video_URL =  BASE_URL + "Transaction/UploadVideo";;
 

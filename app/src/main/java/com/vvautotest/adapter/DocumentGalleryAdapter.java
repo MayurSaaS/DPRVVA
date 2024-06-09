@@ -34,6 +34,7 @@ public class DocumentGalleryAdapter  extends RecyclerView.Adapter<DocumentGaller
     Site selectedSite;
     String folderName;
     String dirpath = "";
+    String selectedUserId = "";
 
     public void updateList(List<ImageData> listData, String dirpath) {
         this.imageDataList = listData;
@@ -69,6 +70,7 @@ public class DocumentGalleryAdapter  extends RecyclerView.Adapter<DocumentGaller
         sessionManager = new SessionManager(activity);
         currentUser = sessionManager.getUserDetails();
         selectedSite = sessionManager.getSelectedSite();
+        selectedUserId = currentUser.userID;
     }
     @Override
     public void onBindViewHolder(MyViewHolder holder, @SuppressLint("RecyclerView") final int position) {
@@ -79,9 +81,15 @@ public class DocumentGalleryAdapter  extends RecyclerView.Adapter<DocumentGaller
             if(c.file.contains(".jpg") || c.file.contains(".png") ||
                     c.file.contains(".jpeg"))
             {
-                Glide.with(holder.image).load(My_Document_URL + currentUser.userID + "/" +
+                Glide.with(holder.image).load(My_Document_URL + selectedUserId + "/" +
                         dirpath + c.file)
                         .placeholder(activity.getResources().getDrawable(R.drawable.image_ic_blue)).into(holder.image);
+            }else if(c.file.contains(".mp4"))
+            {
+                holder.image.setImageDrawable(activity.getResources().getDrawable(R.drawable.mp4_image));
+            }else if(c.file.contains(".mkv"))
+            {
+                holder.image.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_mkv));
             }else
             {
                 holder.image.setImageDrawable(activity.getResources().getDrawable(R.drawable.folder));
@@ -123,4 +131,7 @@ public class DocumentGalleryAdapter  extends RecyclerView.Adapter<DocumentGaller
     }
 
 
+    public void updateUserId(String selectedUserId){
+        this.selectedUserId = selectedUserId;
+    }
 }

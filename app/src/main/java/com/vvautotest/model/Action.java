@@ -1,5 +1,8 @@
 package com.vvautotest.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Action {
 
     int id;

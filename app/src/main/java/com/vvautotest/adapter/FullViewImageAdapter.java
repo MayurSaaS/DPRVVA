@@ -39,7 +39,13 @@ public class FullViewImageAdapter extends PagerAdapter {
         TouchImageView img = new TouchImageView(container.getContext());
         try
         {
-            URL url = new URL(postAdsImages.getUrl());
+            String urlStr = "";
+            String url1 = postAdsImages.getUrl();
+            if(url1.contains(" "))
+                urlStr = url1.replace(" ", "%20");
+            else
+                urlStr = url1;
+            URL url = new URL(urlStr);
             Executors.newSingleThreadExecutor().execute(new Runnable() {
                 @Override
                 public void run() {
